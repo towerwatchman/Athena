@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.28307.1000
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Athena_GUI", "Athena_GUI\Athena_GUI.csproj", "{34635CE1-620B-47F7-86F0-2DE69C082479}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FA2A02C6-C404-4B4B-BD95-4FA7A3B74B8C} = {FA2A02C6-C404-4B4B-BD95-4FA7A3B74B8C}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PythonWrapper", "PythonWrapper\PythonWrapper.csproj", "{FA2A02C6-C404-4B4B-BD95-4FA7A3B74B8C}"
 EndProject

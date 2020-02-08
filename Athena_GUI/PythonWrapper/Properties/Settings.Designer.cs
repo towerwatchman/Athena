@@ -25,7 +25,7 @@ namespace PythonWrapper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\PYTHON38")]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\PYTHON37")]
         public string PYTHON_DIR {
             get {
                 return ((string)(this["PYTHON_DIR"]));

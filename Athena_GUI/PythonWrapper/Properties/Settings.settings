@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="PYTHON_DIR" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\PYTHON38</Value>
+      <Value Profile="(Default)">C:\PYTHON37</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -5,8 +5,30 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Athena_GUI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="469.688" Width="800">
     <Grid>
-        
+        <TextBox x:Name="tb_Input_Directory" HorizontalAlignment="Left" Height="23" Margin="10,63,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="642" IsEnabled="False"/>
+        <Label Content="Image Directory" HorizontalAlignment="Left" Margin="10,32,0,0" VerticalAlignment="Top"/>
+        <Button Content="Open Directory" HorizontalAlignment="Left" Margin="679,66,0,0" VerticalAlignment="Top" Width="92" Click="Button_Click"/>
+        <Menu HorizontalAlignment="Left" Height="18" VerticalAlignment="Top" Width="792">
+            <MenuItem Header="File">
+                <MenuItem Header="Exit" Click="MenuItem_Click"/>
+            </MenuItem>
+            <MenuItem Header="Edit"/>
+            <MenuItem Header="Mode"/>
+        </Menu>
+        <Label Content="Files:" HorizontalAlignment="Left" Margin="10,136,0,0" VerticalAlignment="Top"/>
+        <ListView x:Name="lv_FileList" HorizontalAlignment="Left" Height="242" Margin="10,167,0,0" VerticalAlignment="Top" Width="323">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <ComboBox x:Name="cb_Model" HorizontalAlignment="Left" Margin="10,96,0,0" VerticalAlignment="Top" Width="185"/>
+        <Button Content="Reload Models" HorizontalAlignment="Left" Margin="215,98,0,0" VerticalAlignment="Top" Width="87" Click="Button_Click_1"/>
+        <Label x:Name="label_fileN" Content="0" HorizontalAlignment="Left" Margin="51,136,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="btn_alpha_test" Content="Remove Alpha" HorizontalAlignment="Left" Margin="474,179,0,0" VerticalAlignment="Top" Width="117" Click="Btn_alpha_test_Click"/>
+
     </Grid>
 </Window>

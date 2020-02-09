@@ -22,10 +22,12 @@ namespace Athena_GUI
     /// </summary>
     public partial class MainWindow : Window
     {
-        private cv2Wrapper cv2= new cv2Wrapper();
+        private cv2Wrapper cv2 = new cv2Wrapper();
 
         private string tempDir = Directory.GetCurrentDirectory() + @"\Temp";
-        private string resultsDir = Directory.GetCurrentDirectory() + @"\Results";
+        private string UpdateDir = Directory.GetCurrentDirectory() + @"\Updated";
+        private string resultsDir = Directory.GetCurrentDirectory() + @"\Final";
+        private string OriginalDir = Directory.GetCurrentDirectory() + @"\Original";
 
         public MainWindow()
         {
@@ -110,7 +112,25 @@ namespace Athena_GUI
 
             foreach (var file in files)
             {
+                //.HelloWorld();
                 cv2.RemoveAlhpaChannel(file.FullName.ToString(), tempDir);
+            }
+        }
+
+        private void Btn_ESRGAN_Click(object sender, RoutedEventArgs e)
+        {
+            cv2.Esrgan(tempDir, cb_Model.SelectedItem.ToString());
+        }
+
+        private void Btn_MAlpha_Click(object sender, RoutedEventArgs e)
+        {
+            DirectoryInfo directoryInfo = new DirectoryInfo(UpdateDir);
+            FileInfo[] files = directoryInfo.GetFiles();
+
+            foreach (var file in files)
+            {
+                //.HelloWorld();
+                cv2.AddTransparency(OriginalDir, file.FullName.ToString(), resultsDir);
             }
         }
     }

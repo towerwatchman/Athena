@@ -28,7 +28,9 @@
         <ComboBox x:Name="cb_Model" HorizontalAlignment="Left" Margin="10,96,0,0" VerticalAlignment="Top" Width="185"/>
         <Button Content="Reload Models" HorizontalAlignment="Left" Margin="215,98,0,0" VerticalAlignment="Top" Width="87" Click="Button_Click_1"/>
         <Label x:Name="label_fileN" Content="0" HorizontalAlignment="Left" Margin="51,136,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="btn_alpha_test" Content="Remove Alpha" HorizontalAlignment="Left" Margin="474,179,0,0" VerticalAlignment="Top" Width="117" Click="Btn_alpha_test_Click"/>
+        <Button x:Name="btn_alpha_test" Content="Remove Alpha" HorizontalAlignment="Left" Margin="379,167,0,0" VerticalAlignment="Top" Width="117" Click="Btn_alpha_test_Click"/>
+        <Button x:Name="btn_ESRGAN" Content="Esrgan Process" HorizontalAlignment="Left" Margin="379,202,0,0" VerticalAlignment="Top" Width="117" Click="Btn_ESRGAN_Click"/>
+        <Button x:Name="btn_MAlpha" Content="Merge Alpha" HorizontalAlignment="Left" Margin="379,236,0,0" VerticalAlignment="Top" Width="117" Click="Btn_MAlpha_Click"/>
 
     </Grid>
 </Window>

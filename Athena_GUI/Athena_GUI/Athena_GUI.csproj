@@ -112,6 +112,10 @@
   <ItemGroup>
     <None Include="PythonScripts\cv2\cvtColor.py" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="PythonScripts\cv2\RestoreTransparency.py" />
+    <Content Include="PythonScripts\cv2\test.py" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if not exist $(TargetDir)PythonScripts mkdir $(TargetDir)\PythonScripts

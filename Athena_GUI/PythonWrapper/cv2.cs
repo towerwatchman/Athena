@@ -30,16 +30,16 @@ namespace PythonWrapper
 
         public void HelloWorld()
         {
-            string cmd = LocalDirectory + @"\PythonScripts\cv2\test.py";
+            string cmd = LocalDirectory + @"\PythonScripts\cv2\HelloWorld.py";
             string args = "";
             runScript(cmd, args);
         }
 
-        public void Esrgan(string src, string model)
+        public void Esrgan(string src, string dst, string model)
         {
             string cmd = @"C:\ctp\esrgan\run.py";
 
-            string args = "--input " + src + @" --output C:\ctp\esrgan\results " + @"--cpu C:\ctp\esrgan\models\" +model;
+            string args = "--input " + src + @" --output " + dst + @" --cpu C:\ctp\esrgan\models\" +model;
 
             runScript(cmd, args);
         }

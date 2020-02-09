@@ -25,22 +25,34 @@ namespace Athena_GUI
         private cv2Wrapper cv2 = new cv2Wrapper();
 
         private string tempDir = Directory.GetCurrentDirectory() + @"\Temp";
-        private string UpdateDir = Directory.GetCurrentDirectory() + @"\Updated";
-        private string resultsDir = Directory.GetCurrentDirectory() + @"\Final";
-        private string OriginalDir = Directory.GetCurrentDirectory() + @"\Original";
+        private string RBGDir = Directory.GetCurrentDirectory() + @"\Temp\RGB";
+        private string ESRGANDIR = Directory.GetCurrentDirectory() + @"\Temp\ESRGAN_RGB";
+        private string ImageDir = Properties.Settings.Default.IMAGE_FOLDER; // need to add something to change this
+        private string CompleteDIR = Directory.GetCurrentDirectory() + @"\Complete";
 
         public MainWindow()
         {
             InitializeComponent();
 
-            //Check if a results path exist. If it does not then create it
+            //Check if temporary folders exist. If it does not then create them
             string Path = Directory.GetCurrentDirectory();
 
-            if (!Directory.Exists(Path + @"\Results"))
-                Directory.CreateDirectory(Path + @"\Results");
-
+            //Base folder where all temporary files will be stored
             if (!Directory.Exists(Path + @"\Temp"))
                 Directory.CreateDirectory(Path + @"\Temp");
+
+            //Folder for files that no longer have an alpha channel
+            if (!Directory.Exists(Path + @"\Temp\RGB"))
+                Directory.CreateDirectory(Path + @"\Temp\RGB");
+
+            if (!Directory.Exists(Path + @"\Temp\ESRGAN_RGB"))
+                Directory.CreateDirectory(Path + @"\Temp\ESRGAN_RGB");
+
+            //Base folder where all temporary files will be stored
+            if (!Directory.Exists(Path + @"\Complete"))
+                Directory.CreateDirectory(Path + @"\Complete");
+
+
 
             //list all files in image folder folder
             GetImageFiles(Properties.Settings.Default.IMAGE_FOLDER);
@@ -85,53 +97,51 @@ namespace Athena_GUI
             System.Windows.Application.Current.Shutdown();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_btn_OpenDIR(object sender, RoutedEventArgs e)
         {
             using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
             {
-                //System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)  //check for OK...they might press cancel, so don't do anything if they did.
                 {
                     var path = dialog.SelectedPath;
                     tb_Input_Directory.Text = path;
-                    //do something with path
+                    ImageDir = path;
+                    GetImageFiles(path);
                 }
             }
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void Button_btn_RemoveAlpha(object sender, RoutedEventArgs e)
         {
-            GetModels(Properties.Settings.Default.ESRGAN_FOLDER + @"\models");
-        }
-
-        private void Btn_alpha_test_Click(object sender, RoutedEventArgs e)
-        {
-            DirectoryInfo directoryInfo = new DirectoryInfo(Properties.Settings.Default.IMAGE_FOLDER);
+            DirectoryInfo directoryInfo = new DirectoryInfo(ImageDir);
             FileInfo[] files = directoryInfo.GetFiles();
 
             foreach (var file in files)
             {
-                //.HelloWorld();
-                cv2.RemoveAlhpaChannel(file.FullName.ToString(), tempDir);
+                cv2.RemoveAlhpaChannel(file.FullName.ToString(), RBGDir);
             }
         }
 
         private void Btn_ESRGAN_Click(object sender, RoutedEventArgs e)
         {
-            cv2.Esrgan(tempDir, cb_Model.SelectedItem.ToString());
+            cv2.Esrgan(RBGDir, ESRGANDIR, cb_Model.SelectedItem.ToString());
         }
 
         private void Btn_MAlpha_Click(object sender, RoutedEventArgs e)
         {
-            DirectoryInfo directoryInfo = new DirectoryInfo(UpdateDir);
+            DirectoryInfo directoryInfo = new DirectoryInfo(ESRGANDIR);
             FileInfo[] files = directoryInfo.GetFiles();
 
             foreach (var file in files)
             {
                 //.HelloWorld();
-                cv2.AddTransparency(OriginalDir, file.FullName.ToString(), resultsDir);
+                cv2.AddTransparency(ImageDir, file.FullName.ToString(), CompleteDIR);
             }
+        }
+
+        private void Btn_ReloadModels_Click(object sender, RoutedEventArgs e)
+        {
+            GetModels(Properties.Settings.Default.ESRGAN_FOLDER + @"\models");
         }
     }
 }

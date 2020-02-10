@@ -8,5 +8,8 @@
     <Setting Name="IMAGE_FOLDER" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\ctp\esrgan\LR</Value>
     </Setting>
+    <Setting Name="GPU" Type="System.String" Scope="User">
+      <Value Profile="(Default)">AMD</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

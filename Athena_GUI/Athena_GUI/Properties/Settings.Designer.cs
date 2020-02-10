@@ -46,5 +46,17 @@ namespace Athena_GUI.Properties {
                 this["IMAGE_FOLDER"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("AMD")]
+        public string GPU {
+            get {
+                return ((string)(this["GPU"]));
+            }
+            set {
+                this["GPU"] = value;
+            }
+        }
     }
 }

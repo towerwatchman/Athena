@@ -116,6 +116,7 @@
   <ItemGroup>
     <Content Include="PythonScripts\cv2\RestoreTransparency.py" />
     <Content Include="PythonScripts\cv2\HelloWorld.py" />
+    <Content Include="PythonScripts\cv2\Run.py" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

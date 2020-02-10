@@ -35,11 +35,20 @@ namespace PythonWrapper
             runScript(cmd, args);
         }
 
-        public void Esrgan(string src, string dst, string model)
+        public void Esrgan(string src, string dst, string model, string gpu)
         {
             string cmd = @"C:\ctp\esrgan\run.py";
+            //string cmd = LocalDirectory + @"\PythonScripts\cv2\Run.py";
+            string args = "";
 
-            string args = "--input " + src + @" --output " + dst + @" --cpu C:\ctp\esrgan\models\" +model;
+            if (gpu == "NVIDIA")
+            {
+                args = "--input " + src + @" --output " + dst + @"C:\ctp\esrgan\models\" + model;
+            }
+            else //AMD
+            {
+                args = "--input " + src + @" --output " + dst + @" --cpu C:\ctp\esrgan\models\" + model;
+            }
 
             runScript(cmd, args);
         }

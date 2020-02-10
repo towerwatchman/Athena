@@ -30,6 +30,8 @@ namespace Athena_GUI
         private string ImageDir = Properties.Settings.Default.IMAGE_FOLDER; // need to add something to change this
         private string CompleteDIR = Directory.GetCurrentDirectory() + @"\Complete";
 
+        private string GPU = "";
+
         public MainWindow()
         {
             InitializeComponent();
@@ -60,6 +62,20 @@ namespace Athena_GUI
 
             //list all models in esrgan folder
             GetModels(Properties.Settings.Default.ESRGAN_FOLDER + @"\models");
+
+            //Set GPU Type
+            if (Properties.Settings.Default.GPU == "NVIDIA")
+            {
+                lbGPU.Content = "NVIDIA";
+                lbGPU.Foreground = Brushes.Green;
+                GPU = "NVIDIA";
+            }
+            else
+            {
+                lbGPU.Content = "AMD";
+                lbGPU.Foreground = Brushes.Red;
+                GPU = "AMD";
+            }
 
 
         }
@@ -124,7 +140,13 @@ namespace Athena_GUI
 
         private void Btn_ESRGAN_Click(object sender, RoutedEventArgs e)
         {
-            cv2.Esrgan(RBGDir, ESRGANDIR, cb_Model.SelectedItem.ToString());
+            DirectoryInfo directoryInfo = new DirectoryInfo(RBGDir);
+            FileInfo[] files = directoryInfo.GetFiles();
+
+            foreach (var file in files)
+            {
+                cv2.Esrgan(file.FullName.ToString(), ESRGANDIR, cb_Model.SelectedItem.ToString(), lbGPU.Content.ToString());
+            }
         }
 
         private void Btn_MAlpha_Click(object sender, RoutedEventArgs e)
@@ -142,6 +164,21 @@ namespace Athena_GUI
         private void Btn_ReloadModels_Click(object sender, RoutedEventArgs e)
         {
             GetModels(Properties.Settings.Default.ESRGAN_FOLDER + @"\models");
+        }
+
+        private void NvidiaMenu_Click(object sender, RoutedEventArgs e)
+        {
+            lbGPU.Content = "NVIDIA";
+            lbGPU.Foreground = Brushes.Green;
+            GPU = "NVIDIA";
+
+        }
+
+        private void AMDMenu_Click(object sender, RoutedEventArgs e)
+        {
+            lbGPU.Content = "AMD";
+            lbGPU.Foreground = Brushes.Red;
+            GPU = "AMD";
         }
     }
 }

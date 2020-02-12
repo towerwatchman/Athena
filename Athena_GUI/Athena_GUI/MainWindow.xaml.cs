@@ -1,19 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.IO;
 using PythonWrapper;
+using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace Athena_GUI
 {
@@ -29,6 +20,7 @@ namespace Athena_GUI
         private string ESRGANDIR = Directory.GetCurrentDirectory() + @"\Temp\ESRGAN_RGB";
         private string ImageDir = Properties.Settings.Default.IMAGE_FOLDER; // need to add something to change this
         private string CompleteDIR = Directory.GetCurrentDirectory() + @"\Complete";
+        private string CurrDir = Directory.GetCurrentDirectory();
 
         private string GPU = "";
 
@@ -36,6 +28,7 @@ namespace Athena_GUI
         {
             InitializeComponent();
 
+            #region CREATE FOLDER STRUCTURE
             //Check if temporary folders exist. If it does not then create them
             string Path = Directory.GetCurrentDirectory();
 
@@ -53,10 +46,10 @@ namespace Athena_GUI
             //Base folder where all temporary files will be stored
             if (!Directory.Exists(Path + @"\Complete"))
                 Directory.CreateDirectory(Path + @"\Complete");
+            #endregion
 
-
-
-            //list all files in image folder folder
+            #region INIT
+            //list all files in image folder folder        
             GetImageFiles(Properties.Settings.Default.IMAGE_FOLDER);
             tb_Input_Directory.Text = Properties.Settings.Default.IMAGE_FOLDER;
 
@@ -76,20 +69,70 @@ namespace Athena_GUI
                 lbGPU.Foreground = Brushes.Red;
                 GPU = "AMD";
             }
-
-
+            #endregion
         }
-
         private void GetImageFiles(string folder)
         {
-            //clear existing images
+            //clear existing images in list
             lv_FileList.Items.Clear();
+
+            GridView gridView = new GridView();
+            GridViewColumn nameColumn = new GridViewColumn();
+            nameColumn.DisplayMemberBinding = new Binding("Name");
+            nameColumn.Header = "Name";
+            nameColumn.Width = 300;
+            gridView.Columns.Add(nameColumn);
+
+            GridViewColumn sizeColumn = new GridViewColumn();
+            sizeColumn.DisplayMemberBinding = new Binding("ImgSize");
+            sizeColumn.Header = "Size";
+            sizeColumn.Width = 60;
+            gridView.Columns.Add(sizeColumn);
+
+            GridViewColumn mipmapColumn = new GridViewColumn();
+            mipmapColumn.DisplayMemberBinding = new Binding("mipmap");
+            mipmapColumn.Header = "mipmap";
+            mipmapColumn.Width = 60;
+            gridView.Columns.Add(mipmapColumn);
+
+            lv_FileList.View = gridView;
+
+
             DirectoryInfo directoryInfo = new DirectoryInfo(folder);
             FileInfo[] files = directoryInfo.GetFiles();
 
             foreach (var file in files)
             {
-                lv_FileList.Items.Add(file.Name);
+                string f_name = file.Name;
+                if (f_name.Contains("tex1"))//for Dolphin Textures
+                {
+                    string[] temp = f_name.Split('_');
+
+                    //add check for dolphin
+                    if (temp[2] == "m")//check for mipmaps in dolphin texture
+                    {
+                        if (f_name.Contains("mip"))
+                        {
+                            if (!Directory.Exists(folder + @"\Mipmap"))
+                                Directory.CreateDirectory(folder + @"\Mipmap");
+
+                            File.Move(file.FullName, folder + @"\Mipmap\" + f_name);
+                        }
+
+                        this.lv_FileList.Items.Add(new Image { Name = f_name, ImgSize = temp[1], mipmap = "Yes" });
+
+                    }
+                    else
+                    {
+                        this.lv_FileList.Items.Add(new Image { Name = f_name, ImgSize = temp[1], mipmap = "No" });
+                    }
+                }
+                else //for all other types add to the array of items
+                {
+                    System.Drawing.Image img = System.Drawing.Image.FromFile(file.FullName);
+                    this.lv_FileList.Items.Add(new Image { Name = f_name, ImgSize = img.Width + "x" + img.Height, mipmap = "No" });
+                    //lv_FileList.Items.Add(file.Name);
+                }
             }
             label_fileN.Content = files.Count();
         }
@@ -179,6 +222,24 @@ namespace Athena_GUI
             lbGPU.Content = "AMD";
             lbGPU.Foreground = Brushes.Red;
             GPU = "AMD";
+        }
+
+        private void BtnMipmaps_Click(object sender, RoutedEventArgs e)
+        {
+            if (!Directory.Exists(CurrDir + @"\Complete\Mipmaps"))
+                Directory.CreateDirectory(CurrDir + @"\Complete\Mipmaps");
+
+            DirectoryInfo directoryInfo = new DirectoryInfo(CurrDir + @"\Complete");
+            FileInfo[] files = directoryInfo.GetFiles();
+
+            foreach (var file in files)
+            {
+                if (file.Name.Contains("_m_"))
+                {
+                    cv2.GenerateBitmaps(file.FullName.ToString(), CurrDir + @"\Complete\Mipmaps", "Dolphin");
+                }
+            }
+            
         }
     }
 }

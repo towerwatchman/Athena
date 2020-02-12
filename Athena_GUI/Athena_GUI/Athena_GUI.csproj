@@ -43,6 +43,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -62,6 +63,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="SettingsParser.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -70,6 +72,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Image.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -100,6 +103,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Settings.ini" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -111,9 +115,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="PythonScripts\cv2\cvtColor.py" />
+    <None Include="PythonScripts\cv2\RemoveTransparency.py" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="PythonScripts\cv2\GenerateMipmaps.py" />
     <Content Include="PythonScripts\cv2\RestoreTransparency.py" />
     <Content Include="PythonScripts\cv2\HelloWorld.py" />
     <Content Include="PythonScripts\cv2\Run.py" />

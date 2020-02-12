@@ -49,7 +49,7 @@ namespace Athena_GUI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("AMD")]
+        [global::System.Configuration.DefaultSettingValueAttribute("NVIDIA")]
         public string GPU {
             get {
                 return ((string)(this["GPU"]));

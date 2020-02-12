@@ -66,7 +66,7 @@ for k, v in model.named_parameters():
     v.requires_grad = False
 model = model.to(device)
 
-print('Model path {:s}. \nTesting...'.format(model_path))
+#print('Model path {:s}. \nTesting...'.format(model_path))
 
 # read image
 img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
@@ -75,7 +75,7 @@ img = img * 1. / np.iinfo(img.dtype).max
 if img.ndim == 2:
     img = np.tile(np.expand_dims(img, axis=2), (1, 1, min(in_nc, 3)))
 if img.shape[2] > in_nc: # remove extra channels
-    print('Warning: Truncating image channels')
+    #print('Warning: Truncating image channels')
     img = img[:, :, :in_nc]
 elif img.shape[2] == 3 and in_nc == 4: # pad with solid alpha channel
     img = np.dstack((img, np.full(img.shape[:-1], 1.)))

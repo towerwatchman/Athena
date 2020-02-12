@@ -10,15 +10,15 @@ parser.add_argument('--output', default='C:\ctp\esrgan\results', help='Output fo
 args = parser.parse_args()
 
 img_path = os.path.join(os.path.normpath(args.input))
-print(img_path)
+#print(img_path)
 img_name = os.path.basename(args.input);
-print(img_name)
+#print(img_name)
 #output_folder = os.path.join(args.output, os.path.basename(args.input))
 dst_img = os.path.join(args.output, os.path.basename(args.input))
-print("Opening Image");
-print(dst_img)
+#print("Opening Image");
+#print(dst_img)
 img = cv2.imread(img_path, cv2.IMREAD_COLOR)
 cv2.cvtColor(img, cv2.COLOR_RGBA2RGB);
-print("Removeing Alpha Channel")
+#print("Removeing Alpha Channel")
 cv2.imwrite(dst_img, img)
-print("Saving Image")
+print("Complete")

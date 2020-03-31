@@ -63,6 +63,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Content Include="PythonScripts\TransparencyTest.py" />
+    <Compile Include="Settings.cs" />
     <Compile Include="SettingsParser.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -87,11 +89,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -99,11 +96,9 @@
     <None Include="app.manifest">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    <None Include="Settings.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Settings.ini" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -115,13 +110,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="PythonScripts\cv2\RemoveTransparency.py" />
+    <None Include="PythonScripts\RemoveTransparency.py" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="PythonScripts\cv2\GenerateMipmaps.py" />
-    <Content Include="PythonScripts\cv2\RestoreTransparency.py" />
-    <Content Include="PythonScripts\cv2\HelloWorld.py" />
-    <Content Include="PythonScripts\cv2\Run.py" />
+    <Content Include="PythonScripts\GenerateMipmaps.py" />
+    <Content Include="PythonScripts\RestoreTransparency.py" />
+    <Content Include="PythonScripts\HelloWorld.py" />
+    <Content Include="PythonScripts\RestoreTransparencyV2.py" />
+    <Content Include="PythonScripts\Run.py" />
+    <Content Include="PythonScripts\RunTest.py" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

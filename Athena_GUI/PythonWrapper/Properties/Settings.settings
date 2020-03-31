@@ -1,9 +1,0 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="PythonWrapper.Properties" GeneratedClassName="Settings">
-  <Profiles />
-  <Settings>
-    <Setting Name="PYTHON_DIR" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\PYTHON37</Value>
-    </Setting>
-  </Settings>
-</SettingsFile>

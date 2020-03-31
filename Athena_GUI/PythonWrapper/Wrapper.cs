@@ -4,13 +4,19 @@ using System.IO;
 
 namespace PythonWrapper
 {   
-    public class cv2Wrapper
+    public class Wrapper
     {
+        public string PythonDir
+        {
+            get;
+            set;
+        }
+
         private string LocalDirectory = Directory.GetCurrentDirectory();
               
         public void RemoveAlhpaChannel(string src, string dst)
         {
-            string cmd = LocalDirectory + @"\PythonScripts\cv2\RemoveTransparency.py";
+            string cmd = LocalDirectory + @"\PythonScripts\RemoveTransparency.py";
 
             string args = "--input " + src + " --output " + dst;
 
@@ -19,7 +25,7 @@ namespace PythonWrapper
 
         public void HelloWorld()
         {
-            string cmd = LocalDirectory + @"\PythonScripts\cv2\HelloWorld.py";
+            string cmd = LocalDirectory + @"\PythonScripts\HelloWorld.py";
             string args = "";
             runScript(cmd, args);
         }
@@ -42,9 +48,18 @@ namespace PythonWrapper
             runScript(cmd, args);
         }
 
+        public void Test(string ori, string src, string dst)
+        {
+            string cmd = LocalDirectory + @"\PythonScripts\TransparencyTest.py";
+            //string cmd = LocalDirectory + @"\PythonScripts\cv2\Run.py";
+            string args = "--original " + ori + " --input " + src + " --output " + dst;
+
+            runScript(cmd, args);
+        }
+
         public void AddTransparency(string ori, string src, string dst)
         {
-            string cmd = LocalDirectory + @"\PythonScripts\cv2\RestoreTransparency.py";
+            string cmd = LocalDirectory + @"\PythonScripts\RestoreTransparency.py";
 
             string args = "--original " +ori+ " --input " + src + " --output " + dst;
 
@@ -55,7 +70,7 @@ namespace PythonWrapper
         {
             if (Type == "Dolphin")
             {
-                string cmd = LocalDirectory + @"\PythonScripts\cv2\GenerateMipmaps.py";
+                string cmd = LocalDirectory + @"\PythonScripts\GenerateMipmaps.py";
 
                 string args = "--input " + Image + " --output " + DestinationFolder;
 
@@ -69,7 +84,7 @@ namespace PythonWrapper
             string result = "";
 
             Process process = new Process();
-            process.StartInfo.FileName = Properties.Settings.Default.PYTHON_DIR + @"\python.exe";
+            process.StartInfo.FileName = PythonDir + @"\python.exe";
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.RedirectStandardError = true;
             process.StartInfo.UseShellExecute = false;

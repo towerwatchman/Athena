@@ -20,10 +20,10 @@ namespace Athena_GUI
         private SettingsParser settingsParser = new SettingsParser();
 
         //Global Variables
-        private string tempDir = Directory.GetCurrentDirectory() + @"\Temp";
-        private string RBGDir = Directory.GetCurrentDirectory() + @"\Temp\RGB";
-        private string ESRGANOUTDIR = Directory.GetCurrentDirectory() + @"\Temp\ESRGAN_RGB";
-        private string ImageDir = @"C:\ctp\esrgan\LR"; // need to add something to change this
+        private string tempDir = Directory.GetCurrentDirectory() + @"\ResourTemp";
+        private string AlphaDir = Directory.GetCurrentDirectory() + @"\Resources\Alpha";
+        //private string ESRGANOUTDIR = Directory.GetCurrentDirectory() + @"\Temp\ESRGAN_RGB";
+        private string ImageDir = Directory.GetCurrentDirectory() + @"\Resources\Images"; // need to add something to change this
         private string CompleteDIR = Directory.GetCurrentDirectory() + @"\Complete";
         private string CurrDir = Directory.GetCurrentDirectory();
         private string GPU = "";
@@ -48,18 +48,19 @@ namespace Athena_GUI
             //Check if temporary folders exist. If it does not then create them
             string Path = Directory.GetCurrentDirectory();
 
-            //Base folder where all temporary files will be stored
-            if (!Directory.Exists(Path + @"\Temp"))
-                Directory.CreateDirectory(Path + @"\Temp");
+            //Create Models directory
+            if (!Directory.Exists(Path + @"\Resources\Models"))
+                Directory.CreateDirectory(Path + @"\Resources\Models");
 
-            //Folder for files that no longer have an alpha channel
-            if (!Directory.Exists(Path + @"\Temp\RGB"))
-                Directory.CreateDirectory(Path + @"\Temp\RGB");
+            //Create Alpha Images directory
+            if (!Directory.Exists(Path + @"\Resources\Alpha"))
+                Directory.CreateDirectory(Path + @"\Resources\Alpha");
 
-            if (!Directory.Exists(Path + @"\Temp\ESRGAN_RGB"))
-                Directory.CreateDirectory(Path + @"\Temp\ESRGAN_RGB");
+            //Base folder where images files will be stored
+            if (!Directory.Exists(Path + @"\Resources\Images"))
+                Directory.CreateDirectory(Path + @"\Resources\Images");
 
-            //Base folder where all temporary files will be stored
+            //Base folder where Completed files will be stored
             if (!Directory.Exists(Path + @"\Complete"))
                 Directory.CreateDirectory(Path + @"\Complete");
             #endregion
@@ -67,7 +68,7 @@ namespace Athena_GUI
             #region INIT
 
             //DELTE ALL FILES IN TEMP FOLDERS
-            DirectoryInfo directory = new DirectoryInfo(RBGDir);
+            /*DirectoryInfo directory = new DirectoryInfo(RBGDir);
             foreach (FileInfo file in directory.GetFiles())
             {
                 file.Delete();
@@ -85,14 +86,14 @@ namespace Athena_GUI
             foreach (DirectoryInfo dir in directory.GetDirectories())
             {
                 dir.Delete(true);
-            }
+            }*/
 
             //lOAD SETTINGS
             settingsParser.ReadSettings();
 
             if (Settings.LastAccessedFolder != "")
             {
-                ImageDir = Settings.LastAccessedFolder;
+                ImageDir = CurrDir + @"\Resources\images";
             }
 
             //list all files in image folder folder        
@@ -100,7 +101,7 @@ namespace Athena_GUI
             tb_Input_Directory.Text = ImageDir;
 
             //list all models in esrgan folder
-            GetModels(Settings.ESRGANDir + @"\models");
+            GetModels(CurrDir + @"\Resources\models");
 
             //Set GPU Type
             if (Settings.GPU == "NVIDIA")
@@ -132,6 +133,7 @@ namespace Athena_GUI
             //clear existing images in list
             lv_FileList.Items.Clear();
 
+            #region GridView Bindings
             GridView gridView = new GridView();
             GridViewColumn nameColumn = new GridViewColumn();
             nameColumn.DisplayMemberBinding = new Binding("Name");
@@ -150,71 +152,87 @@ namespace Athena_GUI
             mipmapColumn.Header = "mipmap";
             mipmapColumn.Width = 60;
             gridView.Columns.Add(mipmapColumn);
-
+            
             lv_FileList.View = gridView;
+            #endregion
 
-            DirectoryInfo directoryInfo = new DirectoryInfo(folder);
-            FileInfo[] files = directoryInfo.GetFiles();
-            System.Drawing.Image img;
-
-            fileCount = 0; //Reset File Count
-
-            foreach (var file in files)
+            #region Get Images from Folder
+            try
             {
-                string f_name = file.Name;
-                if (f_name.Contains("tex1"))//for Dolphin Textures
-                {
-                    string[] temp = f_name.Split('_');
+                DirectoryInfo directoryInfo = new DirectoryInfo(folder);
+                FileInfo[] files = directoryInfo.GetFiles();
+                System.Drawing.Image img;
 
-                    //add check for dolphin
-                    if (temp[2] == "m")//check for mipmaps in dolphin texture
+                fileCount = 0; //Reset File Count
+
+                foreach (var file in files)
+                {
+                    string f_name = file.Name;
+                    if (f_name.Contains("tex1"))//for Dolphin Textures
                     {
-                        if (f_name.Contains("mip"))
+                        string[] temp = f_name.Split('_');
+
+                        //add check for dolphin
+                        if (temp[2] == "m")//check for mipmaps in dolphin texture
                         {
-                            if (!Directory.Exists(folder + @"\Mipmap"))
-                                Directory.CreateDirectory(folder + @"\Mipmap");
+                            if (f_name.Contains("mip"))
+                            {
+                                if (!Directory.Exists(folder + @"\Mipmap"))
+                                    Directory.CreateDirectory(folder + @"\Mipmap");
 
-                            File.Move(file.FullName, folder + @"\Mipmap\" + f_name);
+                                File.Move(file.FullName, folder + @"\Mipmap\" + f_name);
+                            }
+
+                            this.lv_FileList.Items.Add(new Image { Name = f_name, ImgSize = temp[1], mipmap = "Yes" });
                         }
-
-                        this.lv_FileList.Items.Add(new Image { Name = f_name, ImgSize = temp[1], mipmap = "Yes" });
-
+                        else
+                        {
+                            this.lv_FileList.Items.Add(new Image { Name = f_name, ImgSize = temp[1], mipmap = "No" });
+                        }
+                        fileCount++; //increment file count
                     }
-                    else
+                    else //for all other types add to the array of items
                     {
-                        this.lv_FileList.Items.Add(new Image { Name = f_name, ImgSize = temp[1], mipmap = "No" });
-                    }
-                    fileCount++; //increment file count
-                }
-                else //for all other types add to the array of items
-                {
-                    /// *** Need to add check to image file type as listed in settings file.
-                    /// *** Right now this will only work with *.png files.
-                    /// *** REFACTOR 
+                        /// *** Need to add check to image file type as listed in settings file.
+                        /// *** Right now this will only work with *.png files.
+                        /// *** REFACTOR 
 
-                    if (ImageExtensions.Contains(Path.GetExtension(file.FullName).ToUpperInvariant()))
-                    {
-                        img = System.Drawing.Image.FromFile(file.FullName);
-                        this.lv_FileList.Items.Add(new Image { Name = f_name, ImgSize = img.Width + "x" + img.Height, mipmap = "No" });
+                        if (ImageExtensions.Contains(Path.GetExtension(file.FullName).ToUpperInvariant()))
+                        {
+                            img = System.Drawing.Image.FromFile(file.FullName);
+                            this.lv_FileList.Items.Add(new Image { Name = f_name, ImgSize = img.Width + "x" + img.Height, mipmap = "No" });
+                        }
                     }
                 }
+                label_fileN.Content = files.Count();
+                fileCount = files.Count();
             }
-            label_fileN.Content = files.Count();
-            fileCount = files.Count();
+            catch (Exception ex)
+            {
+                Console.Out.WriteLine(ex);
+            }
+            #endregion
         }
 
         private void GetModels(string folder)
         {
             //clear existing models
             cb_Model.Items.Clear();
-            DirectoryInfo directoryInfo = new DirectoryInfo(folder);
-            FileInfo[] files = directoryInfo.GetFiles("*.pth");
-
-            foreach (var file in files)
+            try
             {
-                cb_Model.Items.Add(file.Name);
+                DirectoryInfo directoryInfo = new DirectoryInfo(folder);
+                FileInfo[] files = directoryInfo.GetFiles("*.pth");
+
+                foreach (var file in files)
+                {
+                    cb_Model.Items.Add(file.Name);
+                }
+                cb_Model.SelectedIndex = 0;//show first item in list
             }
-            cb_Model.SelectedIndex = 0;//show first item in list
+            catch
+            {
+                MessageBox.Show("Unable to Load Models");
+            }
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
@@ -236,6 +254,7 @@ namespace Athena_GUI
             }
         }
 
+        #region Unused Buttons
         private void Button_btn_RemoveAlpha(object sender, RoutedEventArgs e)
         {
             DirectoryInfo directoryInfo = new DirectoryInfo(ImageDir);
@@ -246,13 +265,13 @@ namespace Athena_GUI
             {
                 Console.Out.WriteLine(count);
                 count++;
-                pythonWrapper.RemoveAlhpaChannel(file.FullName.ToString(), RBGDir);
+                pythonWrapper.RemoveAlhpaChannel(file.FullName.ToString(), AlphaDir);
             }
         }
 
         private void Btn_ESRGAN_Click(object sender, RoutedEventArgs e)
         {
-            DirectoryInfo directoryInfo = new DirectoryInfo(RBGDir);
+            /*DirectoryInfo directoryInfo = new DirectoryInfo(RBGDir);
             FileInfo[] files = directoryInfo.GetFiles();
             int count = 0;
 
@@ -261,11 +280,12 @@ namespace Athena_GUI
                 Console.Out.WriteLine(count);
                 count++;
                 pythonWrapper.Esrgan(file.FullName.ToString(), ESRGANOUTDIR, cb_Model.SelectedItem.ToString(), lbGPU.Content.ToString());
-            }
+            }*/
         }
 
         private void Btn_MAlpha_Click(object sender, RoutedEventArgs e)
         {
+            /*
             DirectoryInfo directoryInfo = new DirectoryInfo(ESRGANOUTDIR);
             FileInfo[] files = directoryInfo.GetFiles();
 
@@ -274,11 +294,14 @@ namespace Athena_GUI
                 //.HelloWorld();
                 pythonWrapper.AddTransparency(ImageDir, file.FullName.ToString(), CompleteDIR);
             }
+            */
         }
+
+        #endregion
 
         private void Btn_ReloadModels_Click(object sender, RoutedEventArgs e)
         {
-            GetModels(Settings.ESRGANDir + @"\models");
+            GetModels(CurrDir + @"\Resources\models");
             //list all files in image folder folder        
             GetImageFiles(tb_Input_Directory.Text);
             ImageDir = tb_Input_Directory.Text;
@@ -338,9 +361,8 @@ namespace Athena_GUI
         {
             DirectoryInfo directoryInfo = new DirectoryInfo(ImageDir);
             FileInfo[] files = directoryInfo.GetFiles();
-            //pbStatus.Maximum = fileCount * 3;
             //Remove Alpha Channel
-            UpdateRTB(rtbConsole, "Removeing Aplha Channel from Images");
+            UpdateRTB(rtbConsole, "Removing Aplha Channel from Images");
             var taskA = Task.Run(() =>
             {
                 RemoveAlpha(files);
@@ -349,7 +371,7 @@ namespace Athena_GUI
             System.Threading.Thread.Sleep(1000);//wait for all processes to complete
             UpdateRTB(rtbConsole, "All Alpha Channels Removed");
 
-
+            /*
             //Process ESRGAN for Images
             directoryInfo = new DirectoryInfo(RBGDir);
             files = directoryInfo.GetFiles();
@@ -378,6 +400,7 @@ namespace Athena_GUI
             
             btn_ESRGAN.Dispatcher.BeginInvoke((Action)(() => btn_ESRGAN.IsEnabled = true));
             btnAuto.Dispatcher.BeginInvoke((Action)(() => btnAuto.IsEnabled = true));
+            */
         }
 
         public void RemoveAlpha(FileInfo[] files)
@@ -393,14 +416,14 @@ namespace Athena_GUI
             {
                 var taskD = Task.Run(() =>
                 {
-                    pythonWrapper.RemoveAlhpaChannel(file.FullName.ToString(), RBGDir);
+                    pythonWrapper.RemoveAlhpaChannel(file.FullName.ToString(), AlphaDir);
                     count++;
                     UpdateRTB(rtbConsole, "Removed alpha channel from: " + file.Name);
                     UpdateLabel(lbAlpha, count.ToString());
                 }).ContinueWith(t => ActiveTasks--);
                 ActiveTasks++; //Increment Task
 
-                ThreadLoop:
+            ThreadLoop:
                 if (ActiveTasks >= 5)
                 {
                     System.Threading.Thread.Sleep(100);
@@ -413,34 +436,36 @@ namespace Athena_GUI
         {
             foreach (var file in files)
             {
-                pythonWrapper.Esrgan(file.FullName.ToString(), ESRGANOUTDIR, CurrentModel, Settings.GPU);
+                //pythonWrapper.Esrgan(file.FullName.ToString(), ESRGANOUTDIR, CurrentModel, Settings.GPU);
                 ESRGANComplete++;
                 UpdateLabel(lbESRGAN, ESRGANComplete.ToString());
                 UpdateRTB(rtbConsole, "Processed Image with ESRGAN: " + file.Name);
             }
         }
 
+        //## ADD MODEL FOR ALPHA CHANGE
         public void RestoreAlpha(FileInfo[] files)
         {
-            
+
             foreach (var file in files)
             {
                 var taskE = Task.Run(() =>
                 {
-                    pythonWrapper.AddTransparency(ImageDir, file.FullName.ToString(), CompleteDIR);
+                    //pythonWrapper.AlphaBRZ(ImageDir, file.FullName.ToString(), CompleteDIR, "4x_xbrz_90k.pth", Settings.GPU, AlphaDir, ESRGANOUTDIR);
+                    //pythonWrapper.AddTransparency(ImageDir, file.FullName.ToString(), CompleteDIR);
                     UpdateRTB(rtbConsole, "Processed Image with Alpha: " + file.Name);
                     FinalComplete++;
                     UpdateLabel(lbComplete, FinalComplete.ToString());
                 }).ContinueWith(t => ActiveTasks--);
                 ActiveTasks++; //Increment Task
 
-                ThreadLoop:
-                if (ActiveTasks >= 5)
+            ThreadLoop:
+                if (ActiveTasks >= 1)
                 {
                     System.Threading.Thread.Sleep(100);
                     goto ThreadLoop;
                 }
-            }                      
+            }
         }
 
         public void UpdateLabel(Label label, string text)
@@ -456,12 +481,16 @@ namespace Athena_GUI
 
         private void BtnTest_Click(object sender, RoutedEventArgs e)
         {
+            int count = 0;
             DirectoryInfo directoryInfo = new DirectoryInfo(ImageDir);
             FileInfo[] files = directoryInfo.GetFiles();
             foreach (var file in files)
             {
-                pythonWrapper.Test(ImageDir, file.FullName.ToString(), CompleteDIR);
+                pythonWrapper.Test(file.FullName.ToString(), CompleteDIR, cb_Model.SelectedItem.ToString(), Settings.GPU);
+                count++;
+                Console.Out.WriteLine("Updated Count: " + count);
             }
         }
+
     }
 }

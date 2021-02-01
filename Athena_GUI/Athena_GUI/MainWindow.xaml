@@ -30,7 +30,7 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="Mode">
-                <MenuItem Header="Process" HorizontalAlignment="Left"/>
+                <MenuItem x:Name="miImages" Header="Images" HorizontalAlignment="Left"/>
             </MenuItem>
         </Menu>
         <Label Content="Files:" HorizontalAlignment="Left" Margin="10,136,0,0" VerticalAlignment="Top"/>
@@ -50,7 +50,7 @@
         <TextBox x:Name="rtbConsole" HorizontalAlignment="Left" Height="69" Margin="256,428,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="526"/>
         <Label x:Name="lbGPU" Content="NVIDIA" HorizontalAlignment="Left" Margin="48,442,0,0" VerticalAlignment="Top"/>
         <Label Content="GPU:" HorizontalAlignment="Left" Margin="10,442,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="btnMipmaps" Content="Generate Mipmaps" HorizontalAlignment="Left" Margin="945,254,-270,0" VerticalAlignment="Top" Width="117" Click="BtnMipmaps_Click"/>
+        <Button x:Name="btnMipmaps" Content="Generate Mipmaps" HorizontalAlignment="Left" Margin="654,324,0,0" VerticalAlignment="Top" Width="117" Click="BtnMipmaps_Click"/>
         <Button x:Name="btnAuto" Content="Auto Run" HorizontalAlignment="Left" Margin="652,167,0,0" VerticalAlignment="Top" Width="119" Click="BtnAuto_ClickAsync"/>
         <ProgressBar x:Name="pbStatus" HorizontalAlignment="Left" Height="10" Margin="682,502,0,0" VerticalAlignment="Top" Width="100"/>
         <Label Content="Alpha:" HorizontalAlignment="Left" Margin="658,232,0,0" VerticalAlignment="Top"/>

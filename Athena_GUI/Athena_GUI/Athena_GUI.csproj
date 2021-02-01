@@ -24,6 +24,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -118,11 +119,14 @@
     <Content Include="PythonScripts\HelloWorld.py" />
     <Content Include="PythonScripts\RestoreTransparencyV2.py" />
     <Content Include="PythonScripts\Run.py" />
-    <Content Include="PythonScripts\RunTest.py" />
+    <Content Include="PythonScripts\TransparencyUpscale.py" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if not exist $(TargetDir)PythonScripts mkdir $(TargetDir)\PythonScripts
-xcopy /E /Y "$(ProjectDir)PythonScripts" "$(TargetDir)PythonScripts"</PostBuildEvent>
+    <PostBuildEvent>if not exist "$(TargetDir)\Resources\Scripts" mkdir "$(TargetDir)\Resources\Scripts"
+xcopy /E /Y "$(ProjectDir)PythonScripts" "$(TargetDir)\Resources\Scripts"</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>if not exist "$(TargetDir)\Resources" mkdir "$(TargetDir)Resources"</PreBuildEvent>
   </PropertyGroup>
 </Project>

@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 
 namespace PythonWrapper
-{   
+{
     public class Wrapper
     {
         public string PythonDir
@@ -13,19 +13,28 @@ namespace PythonWrapper
         }
 
         private string LocalDirectory = Directory.GetCurrentDirectory();
-              
+
+        public void CheckPythonVersion()
+        {
+
+        }
+
+        public void CheckForCV2()
+        {
+
+        }
         public void RemoveAlhpaChannel(string src, string dst)
         {
-            string cmd = LocalDirectory + @"\PythonScripts\RemoveTransparency.py";
+            string cmd = LocalDirectory + @"\Resources\Scripts\RemoveTransparency.py";
 
-            string args = "--input " + src + " --output " + dst;
+            string args = "--input \"" + src + "\" --output \"" + dst + "\"";
 
             runScript(cmd, args);
         }
 
         public void HelloWorld()
         {
-            string cmd = LocalDirectory + @"\PythonScripts\HelloWorld.py";
+            string cmd = LocalDirectory + @"\Resources\Scripts\HelloWorld.py";
             string args = "";
             runScript(cmd, args);
         }
@@ -33,8 +42,9 @@ namespace PythonWrapper
         public void Esrgan(string src, string dst, string model, string gpu)
         {
             string cmd = @"C:\ctp\esrgan\run.py";
-            //string cmd = LocalDirectory + @"\PythonScripts\cv2\Run.py";
+            //string cmd = LocalDirectory + @"\Resources\Scripts\cv2\Run.py";
             string args = "";
+            gpu = "KK";
 
             if (gpu == "NVIDIA")
             {
@@ -42,26 +52,44 @@ namespace PythonWrapper
             }
             else //AMD
             {
-                args = "--input " + src + @" --output " + dst + @" --cpu C:\ctp\esrgan\models\" + model;
+                args = "--input " + src + @" --output " + dst + @" C:\ctp\esrgan\models\" + model;
             }
 
             runScript(cmd, args);
         }
 
-        public void Test(string ori, string src, string dst)
+        public void Test(string src, string dst, string model, string gpu)
         {
-            string cmd = LocalDirectory + @"\PythonScripts\TransparencyTest.py";
-            //string cmd = LocalDirectory + @"\PythonScripts\cv2\Run.py";
-            string args = "--original " + ori + " --input " + src + " --output " + dst;
+            string cmd = LocalDirectory + @"\Resources\Scripts\ESRGAN_Upscale.py";
+            string args = "";
+            //string cmd = LocalDirectory + @"\Resources\Scripts\cv2\Run.py";
+            if (gpu == "NVIDIA")
+            {
+                args = "--input " + src + " --output " + dst + " --model " + @" C:\ctp\esrgan\models\4x_xbrz_90k.pth" + " --model2 " + @" C:\ctp\esrgan\models\4x_FArtDIV3_Blend.pth";
+            }
+
+            runScript(cmd, args);
+        }
+
+        public void AlphaBRZ(string org, string src, string dst, string model, string gpu, string alpha, string tempdir)
+        {
+            //pythonWrapper.AlphaBRZ(ImageDir, file.FullName.ToString(), CompleteDIR, "4x_xbrz_90k.pth", Settings.GPU, AlphaDir, ESRGANOUTDIR);
+            string cmd = LocalDirectory + @"\Resources\Scripts\TransparencyUpscale.py";
+            string args = "";
+            //string cmd = LocalDirectory + @"\Resources\Scripts\cv2\Run.py";
+            if (gpu == "NVIDIA")
+            {
+                args = "--input " + src + " --output " + dst + " --original " + org + " --model " + @" C:\ctp\esrgan\models\4x_FArtDIV3_Fine.pth" + " --tempdir " + alpha + " --rgbdir " + tempdir;
+            }
 
             runScript(cmd, args);
         }
 
         public void AddTransparency(string ori, string src, string dst)
         {
-            string cmd = LocalDirectory + @"\PythonScripts\RestoreTransparency.py";
+            string cmd = LocalDirectory + @"\Resources\Scripts\RestoreTransparency.py";
 
-            string args = "--original " +ori+ " --input " + src + " --output " + dst;
+            string args = "--original " + ori + " --input " + src + " --output " + dst;
 
             runScript(cmd, args);
         }
@@ -70,7 +98,7 @@ namespace PythonWrapper
         {
             if (Type == "Dolphin")
             {
-                string cmd = LocalDirectory + @"\PythonScripts\GenerateMipmaps.py";
+                string cmd = LocalDirectory + @"\Resources\Scripts\GenerateMipmaps.py";
 
                 string args = "--input " + Image + " --output " + DestinationFolder;
 
@@ -98,7 +126,7 @@ namespace PythonWrapper
                 Console.Out.WriteLine(stderr);
                 Console.Out.WriteLine(result);
             }
-            if(stderr.Length >0)
+            if (stderr.Length > 0)
             {
                 return stderr; //return Error to console
             }
@@ -109,6 +137,6 @@ namespace PythonWrapper
 
         }
 
-       
+
     }
 }

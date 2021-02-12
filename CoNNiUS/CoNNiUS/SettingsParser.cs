@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Athena_GUI
+namespace Connius
 {
     class SettingsParser
     {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Athena_GUI
+namespace Connius
 {
     /// <summary>
     /// Interaction logic for App.xaml

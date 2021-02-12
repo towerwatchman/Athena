@@ -1,5 +1,9 @@
-# Athena
-Esrgan GUI for Windows 10 (.NET 4.5)
+# CoNNiUS
+Esrgan GUI for Windows - Python wrapper for ESRGAN with additional features
+
+Uses .Net 4.5 for both the frontend and backend. All upscaling is performed using python scripts. Suports alpha channesls, png compression (8bit) and the ability to ouput DDS (BC1-BC7) file format.
+
+Current Verion 
 
 This program is meant to create a more seamless workflow when using an ESRGAN package. The GUI interfaces a DLL that has mutiple OpenCV command built in.
 
@@ -17,7 +21,4 @@ In order to use this progarm you will need the following already installed:
 
 I recommend following this guide to installing all of the items listed above.
 https://upscale.wiki/wiki/ESRGAN_Installation_Guide_for_Windows
-
-
-
 

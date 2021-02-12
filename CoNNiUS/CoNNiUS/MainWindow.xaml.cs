@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Management;
 
-namespace Athena_GUI
+namespace Connius
 {
     public partial class MainWindow : Window
     {

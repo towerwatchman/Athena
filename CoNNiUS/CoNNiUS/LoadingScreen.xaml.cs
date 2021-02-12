@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Athena_GUI
+namespace Connius
 {
     /// <summary>
     /// Interaction logic for LoadingScreen.xaml

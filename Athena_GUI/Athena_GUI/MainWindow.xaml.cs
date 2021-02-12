@@ -6,9 +6,9 @@ using PythonWrapper;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System;
-using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Management;
 
 namespace Athena_GUI
 {
@@ -16,19 +16,20 @@ namespace Athena_GUI
     {
 
         private Wrapper pythonWrapper = new Wrapper();
-        private BackgroundWorker backgroundWorker = new BackgroundWorker();
         private SettingsParser settingsParser = new SettingsParser();
+        private LoadingScreen Screen = new LoadingScreen();
 
         //Global Variables
-        private string tempDir = Directory.GetCurrentDirectory() + @"\ResourTemp";
+        private string RBGDir = Directory.GetCurrentDirectory() + @"\Resources\Temp\RGB";
         private string AlphaDir = Directory.GetCurrentDirectory() + @"\Resources\Alpha";
-        //private string ESRGANOUTDIR = Directory.GetCurrentDirectory() + @"\Temp\ESRGAN_RGB";
-        private string ImageDir = Directory.GetCurrentDirectory() + @"\Resources\Images"; // need to add something to change this
+        private string ESRGANOUTDIR = Directory.GetCurrentDirectory() + @"\Resources\Temp\ESRGAN_RGB";
+        private string ImageDir = Directory.GetCurrentDirectory() + @"\Resources\Images";
         private string CompleteDIR = Directory.GetCurrentDirectory() + @"\Complete";
         private string CurrDir = Directory.GetCurrentDirectory();
         private string GPU = "";
         private int fileCount = 0;
         private static List<string> ImageExtensions = new List<string> { ".PNG", ".JPG" };
+        bool ModelTestMode = false;
 
         //Threading Stuff
         private int count = 0;
@@ -39,12 +40,72 @@ namespace Athena_GUI
 
         private int ActiveTasks = 0;
 
-
         public MainWindow()
         {
+            //Screen.Show(); //show loading screen
+            Init();
             InitializeComponent();
+            //Screen.Hide();
+            PopulateWPF();
+        }
+
+        private void PopulateWPF()
+        {
+
+            #region DISABLE GPU LABELS
+            lbNVIDIA.Visibility = Visibility.Hidden;
+            //lbAMD.Visibility = Visibility.Hidden;
+            //lbIntel.Visibility = Visibility.Hidden;
+            #endregion
+            if (Settings.LastAccessedFolder != "")
+            {
+                ImageDir = CurrDir + @"\Resources\images";
+            }
+
+            //list all files in image folder folder        
+            GetImageFiles(ImageDir);
+            tb_Input_Directory.Text = ImageDir;
+
+            //list all models in esrgan folder
+            GetModels(CurrDir + @"\Resources\models");
+
+            //Find GPU information
+            if (Settings.GPU != "")
+            {
+
+            }
+            else
+            {
+                GetGPUInfo();
+            }
+
+            if (Settings.NVIDIAGPUAvailable == true)
+            {
+                lbNVIDIA.Visibility = Visibility.Visible;
+                lbNVIDIA.Foreground = Brushes.Green;
+                Settings.GPU = "NVIDIA";
+            }
+
+            lbPytorch.Foreground = Settings.TorchInstalled == true ? Brushes.Green : Brushes.Red;
+            lbPytorch.Content = Settings.TorchInstalled == true ? "Installed" : "Not Installed";
+            lbCV2.Foreground = Settings.Cv2Installed == true ? Brushes.Green : Brushes.Red;
+            lbCV2.Content = Settings.Cv2Installed == true ? "Installed" : "Not Installed";
+            lbPython.Foreground = Settings.PythonInstalled == true ? Brushes.Green : Brushes.Red;
+            lbPython.Content = Settings.PythonInstalled == true ? "Installed" : "Not Installed";
+        }
+
+        private void Init()
+        {
+            Screen.pb_loading.Value = 0;
+
+            #region LOAD SETTINGS
+            //lOAD SETTINGS
+            settingsParser.ReadSettings();
+            #endregion
+            Screen.pb_loading.Value = 10;
 
             #region CREATE FOLDER STRUCTURE
+
             //Check if temporary folders exist. If it does not then create them
             string Path = Directory.GetCurrentDirectory();
 
@@ -56,19 +117,63 @@ namespace Athena_GUI
             if (!Directory.Exists(Path + @"\Resources\Alpha"))
                 Directory.CreateDirectory(Path + @"\Resources\Alpha");
 
+            if (!Directory.Exists(Path + @"\Resources\Temp"))
+                Directory.CreateDirectory(Path + @"\Resources\Temp");
+            //Create Alpha Images directory
+            if (!Directory.Exists(Path + @"\Resources\Temp\RGB"))
+                Directory.CreateDirectory(Path + @"\Resources\Temp\RGB");
+
+            //Create Alpha Images directory
+            if (!Directory.Exists(Path + @"\Resources\Temp\ESRGAN_RGB"))
+                Directory.CreateDirectory(Path + @"\Resources\Temp\ESRGAN_RGB");
+
             //Base folder where images files will be stored
             if (!Directory.Exists(Path + @"\Resources\Images"))
                 Directory.CreateDirectory(Path + @"\Resources\Images");
 
+
+
             //Base folder where Completed files will be stored
             if (!Directory.Exists(Path + @"\Complete"))
                 Directory.CreateDirectory(Path + @"\Complete");
+
+
+
             #endregion
 
-            #region INIT
+            Screen.pb_loading.Value = 20;
+
+            #region CHECK PYTHON DIRECTORY
+            Settings.PythonInstalled = Directory.Exists(Settings.PythonDir) ? true : false;
+            pythonWrapper.PythonDir = Settings.PythonDir;
+            #endregion
+
+            Screen.pb_loading.Value = 30;
+
+            #region CHECK PYTORCH
+            Settings.TorchInstalled = Directory.Exists(Settings.PythonDir + @"\Lib\site-packages\torch") ? true : false;
+            #endregion
+
+            Screen.pb_loading.Value = 40;
+
+            #region CHECK CV2
+            Settings.Cv2Installed = Directory.Exists(Settings.PythonDir + @"\Lib\site-packages\cv2") ? true : false;
+            #endregion
+
+            #region DELETE FILES IN FOLDERS
 
             //DELTE ALL FILES IN TEMP FOLDERS
-            /*DirectoryInfo directory = new DirectoryInfo(RBGDir);
+            DirectoryInfo directory = new DirectoryInfo(AlphaDir);
+            foreach (FileInfo file in directory.GetFiles())
+            {
+                file.Delete();
+            }
+            foreach (DirectoryInfo dir in directory.GetDirectories())
+            {
+                dir.Delete(true);
+            }
+
+            directory = new DirectoryInfo(RBGDir);
             foreach (FileInfo file in directory.GetFiles())
             {
                 file.Delete();
@@ -86,51 +191,38 @@ namespace Athena_GUI
             foreach (DirectoryInfo dir in directory.GetDirectories())
             {
                 dir.Delete(true);
-            }*/
-
-            //lOAD SETTINGS
-            settingsParser.ReadSettings();
-
-            if (Settings.LastAccessedFolder != "")
-            {
-                ImageDir = CurrDir + @"\Resources\images";
             }
 
-            //list all files in image folder folder        
-            GetImageFiles(ImageDir);
-            tb_Input_Directory.Text = ImageDir;
-
-            //list all models in esrgan folder
-            GetModels(CurrDir + @"\Resources\models");
-
-            //Set GPU Type
-            if (Settings.GPU == "NVIDIA")
-            {
-                lbGPU.Content = "NVIDIA";
-                lbGPU.Foreground = Brushes.Green;
-                GPU = "NVIDIA";
-            }
-            else
-            {
-                lbGPU.Content = "AMD";
-                lbGPU.Foreground = Brushes.Red;
-                GPU = "AMD";
-            }
-
-            //Set pythondir for Python Wrapper
-            if (Settings.PythonDir == "")
-            {
-                MessageBox.Show("Python Not Installed Correctly");
-            }
-            else
-            {
-                pythonWrapper.PythonDir = Settings.PythonDir;
-            }
             #endregion
+
+            Screen.pb_loading.Value = 50;
+        }
+
+        private void GetGPUInfo()
+        {
+            using (var searcher = new ManagementObjectSearcher("select * from Win32_VideoController"))
+            {
+                foreach (ManagementObject obj in searcher.Get())
+                {
+                    if (obj["Name"].ToString().Contains("NVIDIA"))
+                    {
+                        Settings.NVIDIAGPUAvailable = true;
+                    }
+                    else if (obj["Name"].ToString().Contains("AMD"))
+                    {
+                        Settings.AMDGPUAvailable = true;
+                    }
+                    else if (obj["Name"].ToString().Contains("Intel"))
+                    {
+                        Settings.IntelGpuAvailable = true;
+                    }
+                }
+            }
         }
         private void GetImageFiles(string folder)
         {
             //clear existing images in list
+
             lv_FileList.Items.Clear();
 
             #region GridView Bindings
@@ -152,7 +244,7 @@ namespace Athena_GUI
             mipmapColumn.Header = "mipmap";
             mipmapColumn.Width = 60;
             gridView.Columns.Add(mipmapColumn);
-            
+
             lv_FileList.View = gridView;
             #endregion
 
@@ -271,16 +363,22 @@ namespace Athena_GUI
 
         private void Btn_ESRGAN_Click(object sender, RoutedEventArgs e)
         {
-            /*DirectoryInfo directoryInfo = new DirectoryInfo(RBGDir);
+            btn_ESRGAN.IsEnabled = false;
+            DirectoryInfo directoryInfo = new DirectoryInfo(ImageDir);
             FileInfo[] files = directoryInfo.GetFiles();
-            int count = 0;
-
-            foreach (var file in files)
+            ESRGANComplete = 0;
+            CurrentModel = cb_Model.SelectedItem.ToString();
+            Task.Run(() =>
             {
-                Console.Out.WriteLine(count);
-                count++;
-                pythonWrapper.Esrgan(file.FullName.ToString(), ESRGANOUTDIR, cb_Model.SelectedItem.ToString(), lbGPU.Content.ToString());
-            }*/
+                foreach (var file in files)
+                {
+                    pythonWrapper.Esrgan(file.FullName.ToString(), CompleteDIR, CurrentModel, Settings.GPU, false);
+                    ESRGANComplete++;
+                    UpdateLabel(lbESRGAN, ESRGANComplete.ToString());
+                    UpdateRTB(rtbConsole, "Processed Image with ESRGAN: " + file.Name);
+                }
+            }).ContinueWith(t => btn_ESRGAN.Dispatcher.BeginInvoke((Action)(() => btn_ESRGAN.IsEnabled = true)));
+            
         }
 
         private void Btn_MAlpha_Click(object sender, RoutedEventArgs e)
@@ -296,9 +394,7 @@ namespace Athena_GUI
             }
             */
         }
-
         #endregion
-
         private void Btn_ReloadModels_Click(object sender, RoutedEventArgs e)
         {
             GetModels(CurrDir + @"\Resources\models");
@@ -310,17 +406,17 @@ namespace Athena_GUI
 
         private void NvidiaMenu_Click(object sender, RoutedEventArgs e)
         {
-            lbGPU.Content = "NVIDIA";
+            /*lbGPU.Content = "NVIDIA";
             lbGPU.Foreground = Brushes.Green;
-            GPU = "NVIDIA";
+            GPU = "NVIDIA";*/
 
         }
 
         private void AMDMenu_Click(object sender, RoutedEventArgs e)
         {
-            lbGPU.Content = "AMD";
-            lbGPU.Foreground = Brushes.Red;
-            GPU = "AMD";
+            /*   lbGPU.Content = "AMD";
+               lbGPU.Foreground = Brushes.Red;
+               GPU = "AMD";*/
         }
 
         private void BtnMipmaps_Click(object sender, RoutedEventArgs e)
@@ -371,9 +467,9 @@ namespace Athena_GUI
             System.Threading.Thread.Sleep(1000);//wait for all processes to complete
             UpdateRTB(rtbConsole, "All Alpha Channels Removed");
 
-            /*
+
             //Process ESRGAN for Images
-            directoryInfo = new DirectoryInfo(RBGDir);
+            directoryInfo = new DirectoryInfo(AlphaDir);
             files = directoryInfo.GetFiles();
             UpdateRTB(rtbConsole, "Processing Images with ESRGAN");
             var taskB = Task.Run(() =>
@@ -392,15 +488,18 @@ namespace Athena_GUI
             UpdateRTB(rtbConsole, "Processing Images with Alpha");
             var taskC = Task.Run(() =>
             {
-                RestoreAlpha(files);
+                if (ModelTestMode == false)
+                {
+                    RestoreAlpha(files);
+                }
             });
             taskC.Wait();
             System.Threading.Thread.Sleep(1000);//wait for all processes to complete
             UpdateRTB(rtbConsole, "All Images Processed with Alpha");
-            
+
             btn_ESRGAN.Dispatcher.BeginInvoke((Action)(() => btn_ESRGAN.IsEnabled = true));
             btnAuto.Dispatcher.BeginInvoke((Action)(() => btnAuto.IsEnabled = true));
-            */
+
         }
 
         public void RemoveAlpha(FileInfo[] files)
@@ -436,7 +535,7 @@ namespace Athena_GUI
         {
             foreach (var file in files)
             {
-                //pythonWrapper.Esrgan(file.FullName.ToString(), ESRGANOUTDIR, CurrentModel, Settings.GPU);
+                pythonWrapper.Esrgan(file.FullName.ToString(), ESRGANOUTDIR, CurrentModel, Settings.GPU, ModelTestMode);
                 ESRGANComplete++;
                 UpdateLabel(lbESRGAN, ESRGANComplete.ToString());
                 UpdateRTB(rtbConsole, "Processed Image with ESRGAN: " + file.Name);
@@ -452,7 +551,7 @@ namespace Athena_GUI
                 var taskE = Task.Run(() =>
                 {
                     //pythonWrapper.AlphaBRZ(ImageDir, file.FullName.ToString(), CompleteDIR, "4x_xbrz_90k.pth", Settings.GPU, AlphaDir, ESRGANOUTDIR);
-                    //pythonWrapper.AddTransparency(ImageDir, file.FullName.ToString(), CompleteDIR);
+                    pythonWrapper.AddTransparency(ImageDir, file.FullName.ToString(), CompleteDIR);
                     UpdateRTB(rtbConsole, "Processed Image with Alpha: " + file.Name);
                     FinalComplete++;
                     UpdateLabel(lbComplete, FinalComplete.ToString());
@@ -481,16 +580,23 @@ namespace Athena_GUI
 
         private void BtnTest_Click(object sender, RoutedEventArgs e)
         {
-            int count = 0;
-            DirectoryInfo directoryInfo = new DirectoryInfo(ImageDir);
-            FileInfo[] files = directoryInfo.GetFiles();
-            foreach (var file in files)
-            {
-                pythonWrapper.Test(file.FullName.ToString(), CompleteDIR, cb_Model.SelectedItem.ToString(), Settings.GPU);
-                count++;
-                Console.Out.WriteLine("Updated Count: " + count);
-            }
-        }
+            ModelTestMode = true;
 
+            //Run a new task that will perform all background operations to process Images
+            Task.Run(() =>
+            {
+                foreach (var model in cb_Model.Items)
+                {
+                    CurrentModel = model.ToString();
+                    processImageThreaded();//Run if threading is true in settings
+                    System.Threading.Thread.Sleep(3000);
+                }
+                ModelTestMode = false;
+            })
+            .ContinueWith(t => Console.WriteLine("Test Mode Complete"));
+
+
+
+        }
     }
 }

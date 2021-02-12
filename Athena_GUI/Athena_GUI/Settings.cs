@@ -33,5 +33,35 @@ namespace Athena_GUI
             get;
             set;
         }
+        public static bool PythonInstalled
+        {
+            get;
+            set;
+        }
+        public static bool TorchInstalled
+        {
+            get;
+            set;
+        }
+        public static bool Cv2Installed
+        {
+            get;
+            set;
+        }
+        public static bool IntelGpuAvailable
+        {
+            get;
+            set;
+        }
+        public static bool NVIDIAGPUAvailable
+        {
+            get;
+            set;
+        }
+        public static bool AMDGPUAvailable
+        {
+            get;
+            set;
+        }
     }
 }

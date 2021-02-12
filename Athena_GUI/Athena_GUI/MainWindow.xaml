@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Athena_GUI"
         mc:Ignorable="d"
-        Title="Athena" Height="561.177" Width="800">
+        Title="Athena" Height="550" Width="800">
     <Grid>
         <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="115" Margin="652,204,0,0" VerticalAlignment="Top" Width="119"/>
         <TextBox x:Name="tb_Input_Directory" HorizontalAlignment="Left" Height="23" Margin="10,63,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="642"/>
@@ -44,15 +44,11 @@
         <ComboBox x:Name="cb_Model" HorizontalAlignment="Left" Margin="10,96,0,0" VerticalAlignment="Top" Width="185"/>
         <Button x:Name="btn_ReloadModels" Content="Reload Models" HorizontalAlignment="Left" Margin="215,98,0,0" VerticalAlignment="Top" Width="87" Click="Btn_ReloadModels_Click"/>
         <Label x:Name="label_fileN" Content="0" HorizontalAlignment="Left" Margin="51,136,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="btn_RemoveAlpha" Content="Remove Alpha" HorizontalAlignment="Left" Margin="945,179,-270,0" VerticalAlignment="Top" Width="117" Click="Button_btn_RemoveAlpha"/>
-        <Button x:Name="btn_ESRGAN" Content="Esrgan Process" HorizontalAlignment="Left" Margin="945,204,-270,0" VerticalAlignment="Top" Width="117" Click="Btn_ESRGAN_Click"/>
-        <Button x:Name="btn_MAlpha" Content="Merge Alpha" HorizontalAlignment="Left" Margin="945,229,-270,0" VerticalAlignment="Top" Width="117" Click="Btn_MAlpha_Click"/>
-        <TextBox x:Name="rtbConsole" HorizontalAlignment="Left" Height="69" Margin="256,428,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="526"/>
-        <Label x:Name="lbGPU" Content="NVIDIA" HorizontalAlignment="Left" Margin="48,442,0,0" VerticalAlignment="Top"/>
-        <Label Content="GPU:" HorizontalAlignment="Left" Margin="10,442,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="btn_ESRGAN" Content="Esrgan Process" HorizontalAlignment="Left" Margin="652,374,0,0" VerticalAlignment="Top" Width="117" Click="Btn_ESRGAN_Click"/>
+        <TextBox x:Name="rtbConsole" HorizontalAlignment="Left" Height="75" Margin="305,428,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="477"/>
+        <Label x:Name="lbNVIDIA" Content="NVIDIA" HorizontalAlignment="Left" Margin="48,484,0,0" VerticalAlignment="Top"/>
         <Button x:Name="btnMipmaps" Content="Generate Mipmaps" HorizontalAlignment="Left" Margin="654,324,0,0" VerticalAlignment="Top" Width="117" Click="BtnMipmaps_Click"/>
-        <Button x:Name="btnAuto" Content="Auto Run" HorizontalAlignment="Left" Margin="652,167,0,0" VerticalAlignment="Top" Width="119" Click="BtnAuto_ClickAsync"/>
-        <ProgressBar x:Name="pbStatus" HorizontalAlignment="Left" Height="10" Margin="682,502,0,0" VerticalAlignment="Top" Width="100"/>
+        <Button x:Name="btnAuto" Content="Start" HorizontalAlignment="Left" Margin="652,167,0,0" VerticalAlignment="Top" Width="119" Click="BtnAuto_ClickAsync"/>
         <Label Content="Alpha:" HorizontalAlignment="Left" Margin="658,232,0,0" VerticalAlignment="Top"/>
         <Label Content="ESRGAN:" HorizontalAlignment="Left" Margin="658,258,0,0" VerticalAlignment="Top"/>
         <Label Content="Complete:" HorizontalAlignment="Left" Margin="658,284,0,0" VerticalAlignment="Top"/>
@@ -60,7 +56,16 @@
         <Label x:Name="lbESRGAN" Content="0" HorizontalAlignment="Left" Margin="723,258,0,0" VerticalAlignment="Top"/>
         <Label x:Name="lbComplete" Content="0" HorizontalAlignment="Left" Margin="723,284,0,0" VerticalAlignment="Top"/>
         <Label Content="Processed" HorizontalAlignment="Left" Margin="682,204,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="btnTest" Content="Test" HorizontalAlignment="Left" Margin="682,362,0,0" VerticalAlignment="Top" Width="75" Click="BtnTest_Click"/>
+        <Button x:Name="btnTest" Content="Test All Models" HorizontalAlignment="Left" Margin="654,349,0,0" VerticalAlignment="Top" Width="117" Click="BtnTest_Click"/>
+        <Label Content="Python:" HorizontalAlignment="Left" Margin="12,432,0,0" VerticalAlignment="Top"/>
+        <Label Content="CV2:" HorizontalAlignment="Left" Margin="164,432,0,0" VerticalAlignment="Top"/>
+        <Label Content="Pytorch:" HorizontalAlignment="Left" Margin="164,458,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lbPython" Content="Not Installed" HorizontalAlignment="Left" Margin="67,432,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lbCV2" Content="Not Installed" HorizontalAlignment="Left" Margin="222,432,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lbPytorch" Content="Not Installed" HorizontalAlignment="Left" Margin="222,458,0,0" VerticalAlignment="Top"/>
+        <Label Content="Numpy:" HorizontalAlignment="Left" Margin="10,458,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lbNumpy" Content="Not Installed" HorizontalAlignment="Left" Margin="67,458,0,0" VerticalAlignment="Top"/>
+        <Label Content="GPU:" HorizontalAlignment="Left" Margin="10,484,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>

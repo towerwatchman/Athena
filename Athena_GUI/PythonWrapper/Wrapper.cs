@@ -4,6 +4,13 @@ using System.IO;
 
 namespace PythonWrapper
 {
+    /// <summary>
+    /// Arch
+    /// Numpy
+    /// CV2
+    /// Torch
+    /// Pip
+    /// </summary>
     public class Wrapper
     {
         public string PythonDir
@@ -39,23 +46,32 @@ namespace PythonWrapper
             runScript(cmd, args);
         }
 
-        public void Esrgan(string src, string dst, string model, string gpu)
+        public void Esrgan(string src, string dst, string model, string gpu, bool TestMode)
         {
-            string cmd = @"C:\ctp\esrgan\run.py";
-            //string cmd = LocalDirectory + @"\Resources\Scripts\cv2\Run.py";
+            string cmd = LocalDirectory + @"\Resources\Scripts\ESRGAN.py";
+            //string cmd = LocalDirectory + @"\Resources\Scripts\run.py";
+            string cmd2 = LocalDirectory + @"\Resources\Scripts\TestMode.py";
             string args = "";
-            gpu = "KK";
 
             if (gpu == "NVIDIA")
             {
-                args = "--input " + src + @" --output " + dst + @" C:\ctp\esrgan\models\" + model;
+                args = "--input " + src + @" --output " + dst + " --model " + LocalDirectory + @"\Resources\Models\" + model;
+
             }
             else //AMD
             {
-                args = "--input " + src + @" --output " + dst + @" C:\ctp\esrgan\models\" + model;
+                args = "--input " + src + @" --output " + dst + " --model " + LocalDirectory + @"\Resources\Models\" + model;
             }
 
-            runScript(cmd, args);
+            if (TestMode == false)
+            {
+                runScript(cmd, args);
+            }
+            else
+            {
+                runScript(cmd2, args);
+            }
+            
         }
 
         public void Test(string src, string dst, string model, string gpu)

@@ -6,6 +6,7 @@ import numpy as np
 import torch
 import architecture as arch
 import argparse
+from pathlib import Path
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--model')
@@ -66,7 +67,7 @@ for k, v in model.named_parameters():
     v.requires_grad = False
 model = model.to(device)
 
-#print('Model path {:s}. \nTesting...'.format(model_path))
+print('Model path {:s}. \nTesting...'.format(os.path.basename(model_path)))
 
 # read image
 img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
@@ -95,5 +96,7 @@ elif output.shape[0] == 4:
     output = output[[2, 1, 0, 3], :, :]
 output = np.transpose(output, (1, 2, 0))
 output = (output * 255.0).round()
-cv2.imwrite(os.path.join(output_folder, os.path.basename(path)), output)
+
+
+cv2.imwrite(os.path.join(output_folder, os.path.basename(model_path + ".png")), output)
 print("Complete")

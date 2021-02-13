@@ -8,26 +8,22 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using Connius.Class;
 
 namespace Connius
 {
-    class Project
+    class Program
     {
         #region PRIVATE
         //private Class designations
-        private SettingsParser settingsParser = new SettingsParser();
-        public Wrapper pythonWrapper = new Wrapper();
+        private Parser settingsParser = new Parser();
+        //private Wrapper pythonWrapper = new Wrapper();
 
         //private variables
         private static List<string> ImageExtensions = new List<string> { ".PNG", ".JPG" };
         #endregion
 
         #region PUBLIC
-        //public variables for folder directories
-        public string ImageDir = Directory.GetCurrentDirectory() + @"\Resources\Images";
-        public string ModelDir = Directory.GetCurrentDirectory() + @"\Resources\Models";
-        public string OutputDir = Directory.GetCurrentDirectory() + @"\Complete";
-
         //public variables
         public int ImageFileCount = 0;
         #endregion
@@ -41,7 +37,13 @@ namespace Connius
             #region LOAD SETTINGS
             //lOAD SETTINGS
             settingsParser.ReadSettings();
-            #endregion 
+            #endregion
+
+            #region INITIAIZE FOLDER LOCATIONS
+            Settings.Directory.ImageDirectory = Directory.GetCurrentDirectory() + @"\Resources\Images";
+            Settings.Directory.ModelDirectory = Directory.GetCurrentDirectory() + @"\Resources\Models";
+            Settings.Directory.OutputDirectory = Directory.GetCurrentDirectory() + @"\Complete";
+            #endregion
 
             #region CREATE FOLDER STRUCTURE
 
@@ -63,24 +65,32 @@ namespace Connius
             #endregion
 
             #region CHECK PYTHON DIRECTORY
-            Settings.PythonInstalled = Directory.Exists(Settings.PythonDir) ? true : false;
-            pythonWrapper.PythonDir = Settings.PythonDir;
+            Settings.ResourceChecker.IsPythonInstalled = Directory.Exists(Settings.Directory.PythonDirectory) ? true : false;
+            //pythonWrapper.PythonDir = Settings.Directory.PythonDirectory;
             #endregion
 
             #region CHECK PYTORCH
-            Settings.TorchInstalled = Directory.Exists(Settings.PythonDir + @"\Lib\site-packages\torch") ? true : false;
+            Settings.ResourceChecker.IsTorchInstalled = Directory.Exists(Settings.Directory.PythonDirectory + @"\Lib\site-packages\torch") ? true : false;
             #endregion
 
             #region CHECK CV2
-            Settings.Cv2Installed = Directory.Exists(Settings.PythonDir + @"\Lib\site-packages\cv2") ? true : false;
+            Settings.ResourceChecker.IsCv2Installed = Directory.Exists(Settings.Directory.PythonDirectory + @"\Lib\site-packages\cv2") ? true : false;
             #endregion
 
             #region CHECK NUMPY
-            Settings.NumpyInstalled = Directory.Exists(Settings.PythonDir + @"\Lib\site-packages\numpy") ? true : false;
+            Settings.ResourceChecker.IsNumpyInstalled = Directory.Exists(Settings.Directory.PythonDirectory + @"\Lib\site-packages\numpy") ? true : false;
+            #endregion
+
+            #region CHECK PNGQUANT
+            Settings.ResourceChecker.IsPngQuantInstalled = Directory.Exists(Settings.Directory.PythonDirectory + @"\Lib\site-packages\pngquant") ? true : false;
+            #endregion
+
+            #region CHECK WIND
+            Settings.ResourceChecker.IsWandInstalled = Directory.Exists(Settings.Directory.PythonDirectory + @"\Lib\site-packages\wand") ? true : false;
             #endregion
 
             //Check for available Video Cards and enable either the NVIDIA or Intel
-            if (Settings.GPU == "")
+            if (Settings.GPU.ActiveGPU == "")
             {
                 GetGPUInfo();
             }
@@ -93,33 +103,39 @@ namespace Connius
                 {
                     if (obj["Name"].ToString().Contains("NVIDIA"))
                     {
-                        Settings.NVIDIAGPUAvailable = true;
+                        Settings.GPU.IsNVIDIAGPUAvailable = true;
+                        Settings.GPU.NvidiaGPUName = obj["Name"].ToString();
                     }
                     else if (obj["Name"].ToString().Contains("AMD") || obj["Name"].ToString().Contains("Radeon"))
                     {
-                        Settings.AMDGPUAvailable = true;
+                        Settings.GPU.IsAMDGPUAvailable = true;
+                        Settings.GPU.AMDGPUName = obj["Name"].ToString();
                     }
                     else if (obj["Name"].ToString().Contains("Intel"))
                     {
-                        Settings.IntelGpuAvailable = true;
+                        Settings.GPU.IsIntelGpuAvailable = true;
+                        Settings.GPU.IntelGPUName = obj["Name"].ToString();
                     }
 
-                    Console.Out.WriteLine(obj["Name"].ToString());
+                    //Console.Out.WriteLine(obj["Name"].ToString());
                 }
             }
 
             //Set the GPU based on information from VideoController
-            if (Settings.NVIDIAGPUAvailable == true)
+            if (Settings.GPU.IsNVIDIAGPUAvailable == true)
             {
-                Settings.GPU = "NVIDIA";
+                Settings.GPU.ActiveGPU = Settings.GPU.NvidiaGPUName;
+                Settings.GPU.IsCudaEnabled = true;
             }
-            if (Settings.AMDGPUAvailable == true && Settings.NVIDIAGPUAvailable == false)
+            else if (Settings.GPU.IsIntelGpuAvailable == true && Settings.GPU.IsNVIDIAGPUAvailable == false)
             {
-                Settings.GPU = "AMD";
+                Settings.GPU.ActiveGPU = Settings.GPU.IntelGPUName;
+                Settings.GPU.IsCudaEnabled = false;
             }
-            if (Settings.IntelGpuAvailable == true && (Settings.AMDGPUAvailable == true || Settings.NVIDIAGPUAvailable == true) != true)
+            else //if nothing found, assume AMD
             {
-                Settings.GPU = "Intel";
+                Settings.GPU.ActiveGPU = Settings.GPU.AMDGPUName;
+                Settings.GPU.IsCudaEnabled = false;
             }
         }
 
@@ -154,7 +170,7 @@ namespace Connius
 
                             ImageSize = img.Width + "x" + img.Height;
                             listView.Dispatcher.BeginInvoke((Action)(() =>
-                                listView.Items.Add(new Image { Name = f_name, ImgSize = ImageSize, mipmap = "Yes" })));          
+                                listView.Items.Add(new ImageClass { Name = f_name, ImgSize = ImageSize, mipmap = "Yes" })));
                         }
                         /*else if(temp[temp.Count() -1].Contains("6")) //Check for video frames from dolphin texture
                         {
@@ -167,7 +183,7 @@ namespace Connius
                         {
 
                             ImageSize = img.Width + "x" + img.Height;
-                            listView.Dispatcher.BeginInvoke((Action)(() => listView.Items.Add(new Image { Name = f_name, ImgSize = ImageSize, mipmap = "No" })));
+                            listView.Dispatcher.BeginInvoke((Action)(() => listView.Items.Add(new ImageClass { Name = f_name, ImgSize = ImageSize, mipmap = "No" })));
                         }
                     }
                     else //for all other types add to the array of items
@@ -180,7 +196,7 @@ namespace Connius
                         if (ImageExtensions.Contains(Path.GetExtension(file.FullName).ToUpperInvariant()))
                         {
                             listView.Dispatcher.BeginInvoke((Action)(() =>
-                                listView.Items.Add(new Image { Name = f_name, ImgSize = ImageSize, mipmap = "No" })));
+                                listView.Items.Add(new ImageClass { Name = f_name, ImgSize = ImageSize, mipmap = "No" })));
                         }
                     }
                 }
@@ -188,7 +204,7 @@ namespace Connius
             }
             catch (Exception ex)
             {
-                Console.Out.WriteLine(ex);
+                Console.Out.WriteLine(ex.ToString());
             }
             #endregion
         }
@@ -197,7 +213,7 @@ namespace Connius
         {
             //clear existing models
             comboBox.Dispatcher.BeginInvoke((Action)(() => comboBox.Items.Clear()));
-            
+
             try
             {
                 DirectoryInfo directoryInfo = new DirectoryInfo(folder);

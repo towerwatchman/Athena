@@ -15,38 +15,55 @@ namespace Connius
 {
     public partial class MainWindow : Window
     {
-        private Project project = new Project();
-        //private PythonWrapper PythonWrapper;
+        private Program project = new Program();
+        private Wrapper PythonWrapper = new Wrapper();
+
+        //public strings for keeping track of Images
+        int errors = 0;
+        int complete = 0;
+        int progress = 0;
 
         public MainWindow()
         {
-            project.Init();
             InitializeComponent();
+            Console.Out.TextBox = rtbConsole;
+            project.Init();
+            PythonWrapper.PythonDir = Settings.Directory.PythonDirectory; // This has to be set or not scripts will run
+            
+            
             PopulateWPF();            
         }
 
         private void PopulateWPF()
         {           
             //list all files in image folder folder        
-            project.GetImageFiles(lv_FileList, project.ImageDir);
+            project.GetImageFiles(lv_FileList, Settings.Directory.ImageDirectory);
             label_fileN.Content = project.ImageFileCount;
-            tb_Input_Directory.Text = project.ImageDir;
+            tb_Input_Directory.Text = Settings.Directory.ImageDirectory;
 
             //list all models in esrgan folder
-            project.GetModels(cb_Model, project.ModelDir);
+            project.GetModels(cb_Model, Settings.Directory.ModelDirectory);
 
             //Population Labels
-            lbGPU.Content = Settings.GPU;
-            lbGPU.Foreground = Settings.GPU == "NVIDIA" ? Brushes.Green: Brushes.Red;
-            img_GPU.Source = Settings.GPU == "NVIDIA" ? new BitmapImage( new Uri(Resources.["  "])) : new BitmapImage( new Uri(@"\Images\Nvidia.jpg")) ;
-            lbPytorch.Foreground = Settings.TorchInstalled == true ? Brushes.Green : Brushes.Red;
-            lbPytorch.Content = Settings.TorchInstalled == true ? "Installed" : "Not Installed";
-            lbCV2.Foreground = Settings.Cv2Installed == true ? Brushes.Green : Brushes.Red;
-            lbCV2.Content = Settings.Cv2Installed == true ? "Installed" : "Not Installed";
-            lbPython.Foreground = Settings.PythonInstalled == true ? Brushes.Green : Brushes.Red;
-            lbPython.Content = Settings.PythonInstalled == true ? "Installed" : "Not Installed";
-            lbNumpy.Foreground = Settings.NumpyInstalled == true ? Brushes.Green : Brushes.Red;
-            lbNumpy.Content = Settings.NumpyInstalled == true ? "Installed" : "Not Installed";
+            lbGPU.Content = Settings.GPU.ActiveGPU;
+            lbGPU.Foreground = Settings.GPU.IsCudaEnabled == true ? Brushes.Green: Brushes.Red;
+            img_GPU.Source = Settings.GPU.IsCudaEnabled == true ? new BitmapImage(new Uri("pack://application:,,,/Images/Nvidia_logo.png")) : new BitmapImage( new Uri("pack://application:,,,/Images/Intel.png")) ;
+            lbPytorch.Foreground = Settings.ResourceChecker.IsTorchInstalled == true ? Brushes.Green : Brushes.Red;
+            lbPytorch.Content = Settings.ResourceChecker.IsTorchInstalled == true ? "Installed" : "Not Installed";
+            lbCV2.Foreground = Settings.ResourceChecker.IsCv2Installed == true ? Brushes.Green : Brushes.Red;
+            lbCV2.Content = Settings.ResourceChecker.IsCv2Installed == true ? "Installed" : "Not Installed";
+            lbPython.Foreground = Settings.ResourceChecker.IsPythonInstalled == true ? Brushes.Green : Brushes.Red;
+            lbPython.Content = Settings.ResourceChecker.IsPythonInstalled == true ? "Installed" : "Not Installed";
+            lbNumpy.Foreground = Settings.ResourceChecker.IsNumpyInstalled == true ? Brushes.Green : Brushes.Red;
+            lbNumpy.Content = Settings.ResourceChecker.IsNumpyInstalled == true ? "Installed" : "Not Installed";
+            lbPngquant.Foreground = Settings.ResourceChecker.IsPngQuantInstalled == true ? Brushes.Green : Brushes.Red;
+            lbPngquant.Content = Settings.ResourceChecker.IsPngQuantInstalled == true ? "Installed" : "Not Installed";
+            lbWand.Foreground = Settings.ResourceChecker.IsWandInstalled == true ? Brushes.Green : Brushes.Red;
+            lbWand.Content = Settings.ResourceChecker.IsWandInstalled == true ? "Installed" : "Not Installed";
+
+            //progress bar
+            pbImages.Maximum = 1;
+            pbImages.Value = 0;
 
             //clear existing images in list
             lv_FileList.Items.Clear();
@@ -76,18 +93,10 @@ namespace Connius
 
         }
 
-        #region INVOKE METHODS FOR GUI THREAD
-        public void UpdateLabel(Label label, string text)
+        public void UpdateProgressBar()
         {
-            label.Dispatcher.BeginInvoke((Action)(() => label.Content = text));
+            pbImages.Dispatcher.BeginInvoke((Action)(()=> pbImages.Value = progress));
         }
-
-        public void UpdateRTB(TextBox textBox, string text)
-        {
-            textBox.Dispatcher.BeginInvoke((Action)(() => textBox.Text += text + "\n"));
-            textBox.Dispatcher.BeginInvoke((Action)(() => textBox.ScrollToEnd()));
-        }
-        #endregion
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
@@ -102,15 +111,16 @@ namespace Connius
                 {
                     string path = dialog.SelectedPath;
                     tb_Input_Directory.Text = path;
-                    project.ImageDir = path;
+                    Settings.Directory.ImageDirectory = path;
                     project.GetImageFiles(lv_FileList, path);
+                    label_fileN.Content = project.ImageFileCount;
                 }
             }
         }
                 
         private void Btn_ReloadModels_Click(object sender, RoutedEventArgs e)
         {
-            project.GetModels(cb_Model, project.ModelDir);
+            project.GetModels(cb_Model, Settings.Directory.ModelDirectory);
             //list all files in image folder folder        
             //GetImageFiles(tb_Input_Directory.Text);
             //ImageDir = tb_Input_Directory.Text;
@@ -152,19 +162,36 @@ namespace Connius
 
         private void Btn_ESRGAN_Click(object sender, RoutedEventArgs e)
         {
-            btn_ESRGAN.IsEnabled = false;
-            DirectoryInfo directoryInfo = new DirectoryInfo(project.ImageDir);
+            Console.Out.WriteLine("Processing Images");
+            complete = 0;
+            errors = 0;
+            progress = 0;
+            lbImageComplete.Content = 0;
+            lbImageFail.Content = 0;
+            pbImages.Maximum = (Int32)label_fileN.Content * 2;
+            pbImages.Value = 0;
+
+            btn_ESRGAN.IsEnabled = false;//disable button so you cant press it again
+
+            DirectoryInfo directoryInfo = new DirectoryInfo(Settings.Directory.ImageDirectory);
             FileInfo[] files = directoryInfo.GetFiles();
-            //ESRGANComplete = 0;
             string model = cb_Model.SelectedItem.ToString();
             Task.Run(() =>
             {
                 foreach (var file in files)
                 {
-                    project.pythonWrapper.Esrgan(file.FullName.ToString(), project.OutputDir, model, Settings.GPU, false);
-                    //ESRGANComplete++;
-                    //UpdateLabel(lbESRGAN, ESRGANComplete.ToString());
-                    UpdateRTB(rtbConsole, "Processed Image with ESRGAN: " + file.Name);
+                    progress ++;
+                    UpdateProgressBar();
+                    string status = PythonWrapper.Esrgan(file.FullName.ToString(), Settings.Directory.OutputDirectory, model, Settings.GPU.IsCudaEnabled);
+
+                    errors += status == "Error" ? 1 : 0;
+                    complete += status == "Complete" ? 1 : 0;
+
+                    lbImageComplete.Dispatcher.BeginInvoke((Action)(() => lbImageComplete.Content = complete));
+                    lbImageFail.Dispatcher.BeginInvoke((Action)(() => lbImageFail.Content = errors));
+
+                    progress++;
+                    UpdateProgressBar();
                 }
             }).ContinueWith(t => btn_ESRGAN.Dispatcher.BeginInvoke((Action)(() => btn_ESRGAN.IsEnabled = true)));
             
@@ -172,12 +199,22 @@ namespace Connius
 
         private void btn_InstallPackages_Click(object sender, RoutedEventArgs e)
         {
-            project.pythonWrapper.IsntallPackages();
+            PythonWrapper.IsntallPackages();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             System.Windows.Application.Current.Shutdown();
+        }
+
+        private void btn_InstallPython_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://www.python.org/downloads/");
+        }
+
+        private void btn_InstallPytorch_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://pytorch.org/get-started/locally/");
         }
     }
 }

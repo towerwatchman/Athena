@@ -217,8 +217,5 @@ cv2.imwrite(os.path.join(output_folder, os.path.basename('alpha_Upscaled.png')),
 cv2.imwrite(os.path.join(output_folder, os.path.basename(path)), esrganImage)
 
 #------------------------------------------------------------------------------------------------------------------------
-
-
-
 #cv2.imwrite(os.path.join(output_folder, os.path.basename(path)), esrganImage)
 print("Complete")

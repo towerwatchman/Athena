@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Connius
+namespace Connius.Class
 {
-    class Image
+    class ImageClass
     {
         public string Name { get; set; }
         public string ImgSize { get; set; }

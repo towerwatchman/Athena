@@ -18,9 +18,12 @@ CoNNiUS is Windows only GUI that uses a Python wrapper for [ESRGAN](https://gith
 * Ability to install missing packages from the GUI `IN PROGRESS`
 
 ## Requirements
-- Python 3.7.x
-- Pytourch
-- OpenCV
-- Numpy
+- [Python 3.7.x](https://www.python.org/downloads/)
+- [Pytourch](https://pytorch.org/get-started/locally/)
+- OpenCV (Can be installed via GUI)
+- Numpy (Can be installed via GUI)
 - Windows 8 or 10
-- NVIDA or Intel Graphics Card.
+- NVIDA or Intel Graphics Card. AMD not supported currently.
+
+## How To Uses
+Once all requiremnts are installed, open the Settings.ini file and add the folder for where Python was installed. If you would like to overide the GPU, add Nvidia or Intel to the "GPU=" line

@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{34635CE1-620B-47F7-86F0-2DE69C082479}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <RootNamespace>Connius</RootNamespace>
     <AssemblyName>Connius</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -105,29 +105,30 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Settings\Directory.cs" />
+    <Compile Include="Settings\GPU.cs" />
+    <Compile Include="Settings\ResourceChecker.cs" />
+    <Compile Include="Settings\Threading.cs" />
     <Resource Include="Images\Connis_Logo.ico" />
     <Resource Include="Images\Connis_Logo_Full.png" />
     <Resource Include="Images\intel.png" />
-    <Resource Include="Images\Nvidia.jpg" />
+    <Resource Include="Images\Nvidia_logo.png" />
     <Content Include="PythonScripts\8bit.py" />
     <Content Include="PythonScripts\architecture.py" />
     <Content Include="PythonScripts\block.py" />
     <Content Include="PythonScripts\ESRGAN.py" />
     <Content Include="PythonScripts\net_interp.py" />
-    <Content Include="PythonScripts\TestMode.py" />
-    <Content Include="PythonScripts\TransparencyTest.py" />
-    <Compile Include="LoadingScreen.xaml.cs">
+    <Compile Include="Views\LoadingScreen.xaml.cs">
       <DependentUpon>LoadingScreen.xaml</DependentUpon>
     </Compile>
     <Content Include="README.txt" />
-    <Compile Include="Project.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="SettingsParser.cs" />
-    <Page Include="LoadingScreen.xaml">
+    <Compile Include="Program.cs" />
+    <Compile Include="Settings\Parser.cs" />
+    <Page Include="Views\LoadingScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -135,8 +136,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Image.cs" />
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Class\ImageClass.cs" />
+    <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -162,20 +163,17 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Console\Console.csproj">
+      <Project>{45db3455-8818-4c4b-87b5-93b29a0bc1c9}</Project>
+      <Name>Console</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PythonWrapper\PythonWrapper.csproj">
       <Project>{fa2a02c6-c404-4b4b-bd95-4fa7a3b74b8c}</Project>
       <Name>PythonWrapper</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="PythonScripts\RemoveTransparency.py" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="PythonScripts\GenerateMipmaps.py" />
-    <Content Include="PythonScripts\RestoreTransparency.py" />
-    <Content Include="PythonScripts\RestoreTransparencyV2.py" />
-    <Content Include="PythonScripts\Run.py" />
-    <Content Include="PythonScripts\TransparencyUpscale.py" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">

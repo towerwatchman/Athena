@@ -4,13 +4,6 @@ using System.IO;
 
 namespace PythonWrapper
 {
-    /// <summary>
-    /// Arch
-    /// Numpy
-    /// CV2
-    /// Torch
-    /// Pip
-    /// </summary>
     public class Wrapper
     {
         public string PythonDir
@@ -32,9 +25,8 @@ namespace PythonWrapper
                 "pip install --upgrade pip & " +
                 "pip install numpy & " +
                 "pip install opencv-python & " +
-                "pip install torch & " +
-                "pip install torchvision & " +
-                "pip install torchaudio & " +
+                "pip install pngquant & " +
+                "pip install Wand & " +
                 "timeout 10 & " +
                 "exit";
             process.StartInfo.UseShellExecute = false;
@@ -45,31 +37,21 @@ namespace PythonWrapper
         }
 
 
-        public void Esrgan(string src, string dst, string model, string gpu, bool TestMode)
+        public string Esrgan(string src, string dst, string model, bool IsCudaEnabled)
         {
             string cmd = LocalDirectory + @"\Resources\Scripts\ESRGAN.py";
-            //string cmd = LocalDirectory + @"\Resources\Scripts\run.py";
-            //string cmd2 = LocalDirectory + @"\Resources\Scripts\TestMode.py";
-            string args = "";
-
-            if (gpu == "NVIDIA")
+            string args;
+            if (IsCudaEnabled == true)
             {
                 args = "--input " + src + @" --output " + dst + " --model " + LocalDirectory + @"\Resources\Models\" + model;
 
             }
-            else //AMD
+            else //Intel
             {
                 args = "--input " + src + @" --output " + dst + " --model " + LocalDirectory + @"\Resources\Models\" + model + " --cpu";
             }
 
-            if (TestMode == false)
-            {
-                RunScriptHidden(cmd, args);
-            }
-            else
-            {
-                //RunScriptHidden(cmd2, args);
-            }
+            return RunScriptHidden(cmd, args);
 
         }
 
@@ -109,23 +91,33 @@ namespace PythonWrapper
             process.StartInfo.RedirectStandardError = true;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.Arguments = string.Concat(cmd, " ", args);
-            process.Start();
-            using (StreamReader reader = process.StandardOutput)
+            process.StartInfo.CreateNoWindow = true;
+            try
             {
-                stderr = process.StandardError.ReadToEnd(); // Here are the exceptions from our Python script
-                result = reader.ReadToEnd(); // Here is the result of StdOut(for example: print "test")
+                process.Start();
+                using (StreamReader reader = process.StandardOutput)
+                {
+                    stderr = process.StandardError.ReadToEnd(); // Here are the exceptions from our Python script
+                    result = reader.ReadToEnd(); // Here is the result of StdOut(for example: print "test")
 
-                Console.Out.WriteLine(stderr);
-                Console.Out.WriteLine(result);
+                    Console.Out.WriteLine(stderr);
+                    Console.Out.WriteLine(result);
+                }
+                if (stderr.Length > 0)
+                {
+                    return "Error"; //return Error to console
+                }
+                else
+                {
+                    return "Complete"; //return Complete
+                }
             }
-            if (stderr.Length > 0)
+            catch(Exception ex)
             {
-                return stderr; //return Error to console
+                Console.Out.WriteLine(ex.ToString());
+                return "";
             }
-            else
-            {
-                return result; //return Complete
-            }
-        }      
+            
+        }
     }
 }

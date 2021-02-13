@@ -21,36 +21,35 @@ namespace PythonWrapper
 
         private string LocalDirectory = Directory.GetCurrentDirectory();
 
-        public void CheckPythonVersion()
+        //Installer for missing Packages
+        public void IsntallPackages()
         {
-
+            //Upgrade Pip
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+            startInfo.FileName = "cmd.exe";
+            startInfo.Arguments = "/k " +
+                "pip install --upgrade pip & " +
+                "pip install numpy & " +
+                "pip install opencv-python & " +
+                "pip install torch & " +
+                "pip install torchvision & " +
+                "pip install torchaudio & " +
+                "timeout 10 & " +
+                "exit";
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo = startInfo;
+            process.StartInfo.Verb = "runas";
+            process.Start();
+            process.WaitForExit();
         }
 
-        public void CheckForCV2()
-        {
-
-        }
-        public void RemoveAlhpaChannel(string src, string dst)
-        {
-            string cmd = LocalDirectory + @"\Resources\Scripts\RemoveTransparency.py";
-
-            string args = "--input \"" + src + "\" --output \"" + dst + "\"";
-
-            runScript(cmd, args);
-        }
-
-        public void HelloWorld()
-        {
-            string cmd = LocalDirectory + @"\Resources\Scripts\HelloWorld.py";
-            string args = "";
-            runScript(cmd, args);
-        }
 
         public void Esrgan(string src, string dst, string model, string gpu, bool TestMode)
         {
             string cmd = LocalDirectory + @"\Resources\Scripts\ESRGAN.py";
             //string cmd = LocalDirectory + @"\Resources\Scripts\run.py";
-            string cmd2 = LocalDirectory + @"\Resources\Scripts\TestMode.py";
+            //string cmd2 = LocalDirectory + @"\Resources\Scripts\TestMode.py";
             string args = "";
 
             if (gpu == "NVIDIA")
@@ -60,31 +59,18 @@ namespace PythonWrapper
             }
             else //AMD
             {
-                args = "--input " + src + @" --output " + dst + " --model " + LocalDirectory + @"\Resources\Models\" + model;
+                args = "--input " + src + @" --output " + dst + " --model " + LocalDirectory + @"\Resources\Models\" + model + " --cpu";
             }
 
             if (TestMode == false)
             {
-                runScript(cmd, args);
+                RunScriptHidden(cmd, args);
             }
             else
             {
-                runScript(cmd2, args);
-            }
-            
-        }
-
-        public void Test(string src, string dst, string model, string gpu)
-        {
-            string cmd = LocalDirectory + @"\Resources\Scripts\ESRGAN_Upscale.py";
-            string args = "";
-            //string cmd = LocalDirectory + @"\Resources\Scripts\cv2\Run.py";
-            if (gpu == "NVIDIA")
-            {
-                args = "--input " + src + " --output " + dst + " --model " + @" C:\ctp\esrgan\models\4x_xbrz_90k.pth" + " --model2 " + @" C:\ctp\esrgan\models\4x_FArtDIV3_Blend.pth";
+                //RunScriptHidden(cmd2, args);
             }
 
-            runScript(cmd, args);
         }
 
         public void AlphaBRZ(string org, string src, string dst, string model, string gpu, string alpha, string tempdir)
@@ -98,16 +84,7 @@ namespace PythonWrapper
                 args = "--input " + src + " --output " + dst + " --original " + org + " --model " + @" C:\ctp\esrgan\models\4x_FArtDIV3_Fine.pth" + " --tempdir " + alpha + " --rgbdir " + tempdir;
             }
 
-            runScript(cmd, args);
-        }
-
-        public void AddTransparency(string ori, string src, string dst)
-        {
-            string cmd = LocalDirectory + @"\Resources\Scripts\RestoreTransparency.py";
-
-            string args = "--original " + ori + " --input " + src + " --output " + dst;
-
-            runScript(cmd, args);
+            RunScriptHidden(cmd, args);
         }
 
         public void GenerateBitmaps(string Image, string DestinationFolder, string Type)
@@ -118,11 +95,10 @@ namespace PythonWrapper
 
                 string args = "--input " + Image + " --output " + DestinationFolder;
 
-                runScript(cmd, args);
+                RunScriptHidden(cmd, args);
             }
         }
-
-        public string runScript(string cmd, string args)
+        public string RunScriptHidden(string cmd, string args)
         {
             string stderr = "";
             string result = "";
@@ -150,9 +126,6 @@ namespace PythonWrapper
             {
                 return result; //return Complete
             }
-
-        }
-
-
+        }      
     }
 }

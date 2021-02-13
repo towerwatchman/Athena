@@ -5,9 +5,9 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{34635CE1-620B-47F7-86F0-2DE69C082479}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <RootNamespace>CoNNiUS</RootNamespace>
-    <AssemblyName>CoNNiUS</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Connius</RootNamespace>
+    <AssemblyName>Connius</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -56,7 +56,8 @@
     </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject />
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup>
@@ -76,6 +77,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Images\Connis_Logo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -101,6 +105,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Resource Include="Images\Connis_Logo.ico" />
+    <Resource Include="Images\Connis_Logo_Full.png" />
+    <Resource Include="Images\intel.png" />
+    <Resource Include="Images\Nvidia.jpg" />
     <Content Include="PythonScripts\8bit.py" />
     <Content Include="PythonScripts\architecture.py" />
     <Content Include="PythonScripts\block.py" />
@@ -112,6 +120,7 @@
       <DependentUpon>LoadingScreen.xaml</DependentUpon>
     </Compile>
     <Content Include="README.txt" />
+    <Compile Include="Project.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SettingsParser.cs" />
     <Page Include="LoadingScreen.xaml">
@@ -148,7 +157,6 @@
     <None Include="app.manifest">
       <SubType>Designer</SubType>
     </None>
-    <None Include="CoNNiUS_TemporaryKey.pfx" />
     <None Include="Settings.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -165,7 +173,6 @@
   <ItemGroup>
     <Content Include="PythonScripts\GenerateMipmaps.py" />
     <Content Include="PythonScripts\RestoreTransparency.py" />
-    <Content Include="PythonScripts\HelloWorld.py" />
     <Content Include="PythonScripts\RestoreTransparencyV2.py" />
     <Content Include="PythonScripts\Run.py" />
     <Content Include="PythonScripts\TransparencyUpscale.py" />

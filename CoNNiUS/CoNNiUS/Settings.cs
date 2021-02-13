@@ -48,6 +48,11 @@ namespace Connius
             get;
             set;
         }
+        public static bool NumpyInstalled
+        {
+            get;
+            set;
+        }
         public static bool IntelGpuAvailable
         {
             get;

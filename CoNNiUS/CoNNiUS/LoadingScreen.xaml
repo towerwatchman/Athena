@@ -7,7 +7,8 @@
         mc:Ignorable="d"
         Title="LoadingScreen" Height="200" Width="400" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" AllowsTransparency="True" Background="{x:Null}" Foreground="{x:Null}" >
     <Grid>
-        <ProgressBar x:Name="pb_loading" HorizontalAlignment="Left" Height="16" Margin="10,162,0,0" VerticalAlignment="Top" Width="380" Foreground="#FF0099D2"/>
+        <ProgressBar x:Name="pb_loading" HorizontalAlignment="Left" Height="16" Margin="10,162,0,0" VerticalAlignment="Top" Width="380" Foreground="#FF0099D2" BorderBrush="{x:Null}"/>
+        <Image Height="157" VerticalAlignment="Top" Source="Connis_Logo_Full.png"/>
 
     </Grid>
 </Window>

@@ -1,19 +1,26 @@
-﻿using System.Linq;
-using System.Windows;
-using System.Windows.Media;
+﻿using PythonWrapper;
+using System;
+using System.Collections.Generic;
 using System.IO;
-using PythonWrapper;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Management;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
-namespace Connius
+namespace Connius.Pages
 {
-    public partial class MainWindow : Window
+    /// <summary>
+    /// Interaction logic for ImagePage.xaml
+    /// </summary>
+    public partial class ImagePage : Page
     {
         private Program project = new Program();
         private Wrapper PythonWrapper = new Wrapper();
@@ -23,19 +30,31 @@ namespace Connius
         int complete = 0;
         int progress = 0;
 
-        public MainWindow()
+        public ImagePage()
         {
             InitializeComponent();
             Console.Out.TextBox = rtbConsole;
             project.Init();
             PythonWrapper.PythonDir = Settings.Directory.PythonDirectory; // This has to be set or not scripts will run
-            
-            
-            PopulateWPF();            
+            PopulateWPF();
         }
 
         private void PopulateWPF()
-        {           
+        {
+            //populate file format comboBox
+
+            //populate format comboBox
+            cbFormat.Items.Add("8bit");
+            cbFormat.Items.Add("32bit");
+            cbFormat.SelectedIndex = 1;
+
+            cbFileType.Items.Add("PNG");
+            cbFileType.Items.Add("JPG");
+            cbFileType.Items.Add("DDS:BC1");
+            cbFileType.Items.Add("DDS:BC3");
+            cbFileType.Items.Add("DDS:BC7");
+            cbFileType.SelectedIndex = 0;
+
             //list all files in image folder folder        
             project.GetImageFiles(lv_FileList, Settings.Directory.ImageDirectory);
             label_fileN.Content = project.ImageFileCount;
@@ -46,8 +65,8 @@ namespace Connius
 
             //Population Labels
             lbGPU.Content = Settings.GPU.ActiveGPU;
-            lbGPU.Foreground = Settings.GPU.IsCudaEnabled == true ? Brushes.Green: Brushes.Red;
-            img_GPU.Source = Settings.GPU.IsCudaEnabled == true ? new BitmapImage(new Uri("pack://application:,,,/Images/Nvidia_logo.png")) : new BitmapImage( new Uri("pack://application:,,,/Images/Intel.png")) ;
+            //lbGPU.Foreground = Settings.GPU.IsCudaEnabled == true ? Brushes.Green : Brushes.Red;
+            img_GPU.Source = Settings.GPU.IsCudaEnabled == true ? new BitmapImage(new Uri("pack://application:,,,/Images/Nvidia_logo.png")) : new BitmapImage(new Uri("pack://application:,,,/Images/Intel.png"));
             lbPytorch.Foreground = Settings.ResourceChecker.IsTorchInstalled == true ? Brushes.Green : Brushes.Red;
             lbPytorch.Content = Settings.ResourceChecker.IsTorchInstalled == true ? "Installed" : "Not Installed";
             lbCV2.Foreground = Settings.ResourceChecker.IsCv2Installed == true ? Brushes.Green : Brushes.Red;
@@ -74,35 +93,57 @@ namespace Connius
             nameColumn.DisplayMemberBinding = new Binding("Name");
             nameColumn.Header = "Name";
             nameColumn.Width = 350;
-            gridView.Columns.Add(nameColumn);
+            gridView.Columns.Add(nameColumn);   
 
             GridViewColumn sizeColumn = new GridViewColumn();
             sizeColumn.DisplayMemberBinding = new Binding("ImgSize");
-            sizeColumn.Header = "Size";
+            sizeColumn.Header = "Dimensions";
             sizeColumn.Width = 80;
             gridView.Columns.Add(sizeColumn);
 
+            GridViewColumn formatColumn = new GridViewColumn();
+            formatColumn.DisplayMemberBinding = new Binding("format");
+            formatColumn.Header = "Format";
+            formatColumn.Width = 60;
+            gridView.Columns.Add(formatColumn);
+
             GridViewColumn mipmapColumn = new GridViewColumn();
             mipmapColumn.DisplayMemberBinding = new Binding("mipmap");
-            mipmapColumn.Header = "mipmap";
+            mipmapColumn.Header = "Mipmaps";
             mipmapColumn.Width = 60;
             gridView.Columns.Add(mipmapColumn);
 
+            GridViewColumn aspectColumn = new GridViewColumn();
+            aspectColumn.DisplayMemberBinding = new Binding("aspect");
+            aspectColumn.Header = "Aspect";
+            aspectColumn.Width = 60;
+            gridView.Columns.Add(aspectColumn);
+
+            GridViewColumn alphaColumn = new GridViewColumn();
+            alphaColumn.DisplayMemberBinding = new Binding("Alpha");
+            alphaColumn.Header = "Alpha";
+            alphaColumn.Width = 60;
+            gridView.Columns.Add(alphaColumn);
+
+            GridViewColumn pathColumn = new GridViewColumn();
+            pathColumn.DisplayMemberBinding = new Binding("path");
+            pathColumn.Header = "Path";
+            pathColumn.Width = 60;
+            gridView.Columns.Add(pathColumn);
+
             lv_FileList.View = gridView;
+
+            gridView.Columns[0].SetValue(HorizontalAlignmentProperty, HorizontalAlignment.Left);
+            gridView.Columns[1].SetValue(HorizontalAlignmentProperty, HorizontalAlignment.Left);
             #endregion
 
         }
 
         public void UpdateProgressBar()
         {
-            pbImages.Dispatcher.BeginInvoke((Action)(()=> pbImages.Value = progress));
+            pbImages.Dispatcher.BeginInvoke((Action)(() => pbImages.Value = progress));
         }
-
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Application.Current.Shutdown();
-        }
-
+               
         private void Button_btn_OpenDIR(object sender, RoutedEventArgs e)
         {
             using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
@@ -117,7 +158,7 @@ namespace Connius
                 }
             }
         }
-                
+
         private void Btn_ReloadModels_Click(object sender, RoutedEventArgs e)
         {
             project.GetModels(cb_Model, Settings.Directory.ModelDirectory);
@@ -127,20 +168,6 @@ namespace Connius
             //tb_Input_Directory.Text = Properties.Settings.Default.IMAGE_FOLDER;
         }
 
-        private void NvidiaMenu_Click(object sender, RoutedEventArgs e)
-        {
-            /*lbGPU.Content = "NVIDIA";
-            lbGPU.Foreground = Brushes.Green;
-            GPU = "NVIDIA";*/
-
-        }
-
-        private void AMDMenu_Click(object sender, RoutedEventArgs e)
-        {
-            /*   lbGPU.Content = "AMD";
-               lbGPU.Foreground = Brushes.Red;
-               GPU = "AMD";*/
-        }
 
         private void BtnMipmaps_Click(object sender, RoutedEventArgs e)
         {
@@ -180,7 +207,7 @@ namespace Connius
             {
                 foreach (var file in files)
                 {
-                    progress ++;
+                    progress++;
                     UpdateProgressBar();
                     string status = PythonWrapper.Esrgan(file.FullName.ToString(), Settings.Directory.OutputDirectory, model, Settings.GPU.IsCudaEnabled);
 
@@ -194,27 +221,13 @@ namespace Connius
                     UpdateProgressBar();
                 }
             }).ContinueWith(t => btn_ESRGAN.Dispatcher.BeginInvoke((Action)(() => btn_ESRGAN.IsEnabled = true)));
-            
+
         }
 
-        private void btn_InstallPackages_Click(object sender, RoutedEventArgs e)
+        private void lv_FileList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            PythonWrapper.IsntallPackages();
-        }
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            System.Windows.Application.Current.Shutdown();
-        }
-
-        private void btn_InstallPython_Click(object sender, RoutedEventArgs e)
-        {
-            System.Diagnostics.Process.Start("https://www.python.org/downloads/");
-        }
-
-        private void btn_InstallPytorch_Click(object sender, RoutedEventArgs e)
-        {
-            System.Diagnostics.Process.Start("https://pytorch.org/get-started/locally/");
+            img_Picture.Source = new BitmapImage(new Uri(((Class.ImageClass)lv_FileList.SelectedItem).FileLocation));
+            img_Picture.Stretch = Stretch.Uniform;
         }
     }
 }

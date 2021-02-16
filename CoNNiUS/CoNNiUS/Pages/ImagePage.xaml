@@ -1,0 +1,104 @@
+﻿<Page x:Class="Connius.Pages.ImagePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Connius.Pages"
+      mc:Ignorable="d" d:DesignWidth="1280"
+      Title="ImagePage" Background="White" Height="673" Width="1700">
+    <Grid>
+        <Button Content="Generate Mipmaps" HorizontalAlignment="Left" Margin="-374,130,0,0" VerticalAlignment="Top" Width="116" Click="BtnMipmaps_Click"/>
+        <GroupBox Header="Image Status" HorizontalAlignment="Left" Height="125" Margin="2087,207,-567,0" VerticalAlignment="Top" Width="180">
+            <Grid Margin="0,0,-2,3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="32*"/>
+                    <ColumnDefinition Width="157*"/>
+                </Grid.ColumnDefinitions>
+                <Label Content="Complete:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="4.46,0.346" Grid.ColumnSpan="2"/>
+                <Label Content="Failed:" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" RenderTransformOrigin="4.46,0.346" Grid.ColumnSpan="2"/>
+                <Label x:Name="lbImageComplete" Content="0" Grid.Column="1" HorizontalAlignment="Left" Margin="58,10,0,0" VerticalAlignment="Top"/>
+                <Label x:Name="lbImageFail" Content="0" Grid.Column="1" HorizontalAlignment="Left" Margin="58,41,0,0" VerticalAlignment="Top"/>
+                <ProgressBar x:Name="pbImages" HorizontalAlignment="Left" Height="18" Margin="10,72,0,0" VerticalAlignment="Top" Width="150" Grid.ColumnSpan="2" BorderBrush="{x:Null}" Foreground="#FF00ACD2"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Console" HorizontalAlignment="Left" Height="226" Margin="10,435,0,0" VerticalAlignment="Top" Width="654">
+            <TextBox x:Name="rtbConsole" Margin="10" TextWrapping="Wrap" BorderBrush="{x:Null}"/>
+        </GroupBox>
+        <GroupBox Header="Dependencies" HorizontalAlignment="Left" Height="219" Margin="2087,337,-567,0" VerticalAlignment="Top" Width="180">
+            <Grid Margin="0,0,-2,3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="32*"/>
+                    <ColumnDefinition Width="157*"/>
+                </Grid.ColumnDefinitions>
+                <Label Content="Python:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="4.46,0.346" Grid.ColumnSpan="2"/>
+                <Label x:Name="lbPython" Content="Not Installed" HorizontalAlignment="Left" Margin="50,10,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+                <Label Content="Numpy:" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                <Label x:Name="lbNumpy" Content="Not Installed" HorizontalAlignment="Left" Margin="50,41,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+                <Label Content="CV2:" HorizontalAlignment="Left" Margin="10,72,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                <Label x:Name="lbCV2" Content="Not Installed" HorizontalAlignment="Left" Margin="50,72,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+                <Label Content="Pytorch:" HorizontalAlignment="Left" Margin="10,103,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                <Label x:Name="lbPytorch" Content="Not Installed" HorizontalAlignment="Left" Margin="50,103,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+                <Label Content="Pngquant:" HorizontalAlignment="Left" Margin="10,134,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                <Label Content="Wand:" HorizontalAlignment="Left" Margin="10,165,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                <Label x:Name="lbPngquant" Content="Not Installed" HorizontalAlignment="Left" Margin="50,134,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+                <Label x:Name="lbWand" Content="Not Installed" HorizontalAlignment="Left" Margin="50,165,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="GPU" HorizontalAlignment="Left" Height="154" Margin="2087,561,-567,-42" VerticalAlignment="Top" Width="180">
+            <Grid Margin="0,0,-2,3">
+                <Label x:Name="lbGPU" Content="GPU Name" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                <Image x:Name="img_GPU" Height="82" Margin="10,36,10,0" VerticalAlignment="Top"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Images" HorizontalAlignment="Left" Height="349" Margin="10,81,0,0" VerticalAlignment="Top" Width="1000">
+            <Grid Margin="0,0,-2,0">
+                <TextBox x:Name="tb_Input_Directory" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="523"/>
+                <Button x:Name="btn_OpenDIR" Content="Open Directory" HorizontalAlignment="Left" Margin="538,10,0,0" VerticalAlignment="Top" Width="92" Click="Button_btn_OpenDIR" Height="22"/>
+                <ListView x:Name="lv_FileList" Height="256" Margin="10,69,14,0" VerticalAlignment="Top" SelectionChanged="lv_FileList_SelectionChanged">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                <Label Content="Files:" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top"/>
+                <Label x:Name="label_fileN" Content="0" HorizontalAlignment="Left" Margin="51,38,0,0" VerticalAlignment="Top"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Models" HorizontalAlignment="Left" Height="67" Margin="10,9,0,0" VerticalAlignment="Top" Width="654">
+            <Grid Margin="0,0,-2,0">
+                <ComboBox x:Name="cb_Model" HorizontalAlignment="Left" Margin="10,10,0,0" Width="503" Height="22" VerticalAlignment="Top"/>
+                <Button x:Name="btn_ReloadModels" Content="Reload Models" HorizontalAlignment="Left" Margin="518,10,0,0" VerticalAlignment="Top" Width="116" Click="Btn_ReloadModels_Click" Height="22"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="ESRGAN" HorizontalAlignment="Left" Height="139" Margin="1116,9,0,0" VerticalAlignment="Top" Width="144">
+            <Grid Margin="0,0,-2,3">
+
+                <Button x:Name="btn_ESRGAN" Content="Process Images" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="108" Click="Btn_ESRGAN_Click" Height="39"/>
+                <Button x:Name="btnTest" Content="Test All Models" HorizontalAlignment="Left" Margin="10,54,0,0" VerticalAlignment="Top" Width="108" Height="22"/>
+                <Button x:Name="btnGeneratePreview" Content="Generate Preview" HorizontalAlignment="Left" Margin="10,81,0,0" VerticalAlignment="Top" Width="108" Height="22"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Output File Type" HorizontalAlignment="Left" Height="67" Margin="669,9,0,0" VerticalAlignment="Top" Width="154">
+            <Grid Margin="0,0,-2,3">
+                <ComboBox x:Name="cbFileType" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="120"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Selected Image" HorizontalAlignment="Left" Height="508" Margin="1015,156,0,0" VerticalAlignment="Top" Width="406">
+            <Grid Margin="0,0,-2,3">
+                <Image x:Name="img_Picture" Source="/Connius;component/Images/Image_Default.png" Margin="10"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Output Format" HorizontalAlignment="Left" Height="67" Margin="828,9,0,0" VerticalAlignment="Top" Width="154">
+            <Grid Margin="0,0,-2,3">
+                <ComboBox x:Name="cbFormat" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="120"/>
+
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Post Processes" HorizontalAlignment="Left" Height="139" Margin="1426,-177,-10,0" VerticalAlignment="Top" Width="284">
+            <Grid Margin="0,0,-2,3">
+                <CheckBox Content="Generate MipMaps" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="127"/>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</Page>

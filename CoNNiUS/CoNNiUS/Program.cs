@@ -170,7 +170,7 @@ namespace Connius
 
                             ImageSize = img.Width + "x" + img.Height;
                             listView.Dispatcher.BeginInvoke((Action)(() =>
-                                listView.Items.Add(new ImageClass { Name = f_name, ImgSize = ImageSize, mipmap = "Yes" })));
+                                listView.Items.Add(new ImageClass { Name = f_name, ImgSize = ImageSize, Mipmap = "Yes", FileLocation = file.FullName })));
                         }
                         /*else if(temp[temp.Count() -1].Contains("6")) //Check for video frames from dolphin texture
                         {
@@ -183,7 +183,7 @@ namespace Connius
                         {
 
                             ImageSize = img.Width + "x" + img.Height;
-                            listView.Dispatcher.BeginInvoke((Action)(() => listView.Items.Add(new ImageClass { Name = f_name, ImgSize = ImageSize, mipmap = "No" })));
+                            listView.Dispatcher.BeginInvoke((Action)(() => listView.Items.Add(new ImageClass { Name = f_name, ImgSize = ImageSize, Mipmap = "No", FileLocation = file.FullName })));
                         }
                     }
                     else //for all other types add to the array of items
@@ -196,7 +196,7 @@ namespace Connius
                         if (ImageExtensions.Contains(Path.GetExtension(file.FullName).ToUpperInvariant()))
                         {
                             listView.Dispatcher.BeginInvoke((Action)(() =>
-                                listView.Items.Add(new ImageClass { Name = f_name, ImgSize = ImageSize, mipmap = "No" })));
+                                listView.Items.Add(new ImageClass { Name = f_name, ImgSize = ImageSize, Mipmap = "No", FileLocation = file.FullName })));
                         }
                     }
                 }

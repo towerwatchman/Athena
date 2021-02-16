@@ -105,6 +105,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Pages\ImagePage.xaml.cs">
+      <DependentUpon>ImagePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Settings\Directory.cs" />
     <Compile Include="Settings\GPU.cs" />
     <Compile Include="Settings\ResourceChecker.cs" />
@@ -113,22 +116,28 @@
     <Resource Include="Images\Connis_Logo_Full.png" />
     <Resource Include="Images\intel.png" />
     <Resource Include="Images\Nvidia_logo.png" />
+    <Resource Include="Images\Image_Default.png" />
+    <Content Include="pngquant\pngquant.exe" />
     <Content Include="PythonScripts\8bit.py" />
     <Content Include="PythonScripts\architecture.py" />
     <Content Include="PythonScripts\block.py" />
     <Content Include="PythonScripts\ESRGAN.py" />
     <Content Include="PythonScripts\net_interp.py" />
-    <Compile Include="Views\LoadingScreen.xaml.cs">
-      <DependentUpon>LoadingScreen.xaml</DependentUpon>
+    <Compile Include="Windows\LoadingWindow.xaml.cs">
+      <DependentUpon>LoadingWindow.xaml</DependentUpon>
     </Compile>
     <Content Include="README.txt" />
     <Compile Include="Program.cs" />
     <Compile Include="Settings\Parser.cs" />
-    <Page Include="Views\LoadingScreen.xaml">
+    <Page Include="Pages\ImagePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\MainWindow.xaml">
+    <Page Include="Windows\LoadingWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -137,7 +146,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Class\ImageClass.cs" />
-    <Compile Include="Views\MainWindow.xaml.cs">
+    <Compile Include="Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -158,6 +167,7 @@
     <None Include="app.manifest">
       <SubType>Designer</SubType>
     </None>
+    <None Include="pngquant\COPYRIGHT" />
     <None Include="Settings.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -182,10 +192,13 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if not exist "$(TargetDir)\Resources\Scripts" mkdir "$(TargetDir)\Resources\Scripts"
-xcopy /E /Y "$(ProjectDir)PythonScripts" "$(TargetDir)\Resources\Scripts"</PostBuildEvent>
+if not exist "$(TargetDir)\Resources\pngquant" mkdir "$(TargetDir)\Resources\pngquant"
+xcopy /E /Y "$(ProjectDir)PythonScripts" "$(TargetDir)\Resources\Scripts"
+xcopy /E /Y "$(ProjectDir)pngquant" "$(TargetDir)\Resources\pngquant"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>if not exist "$(TargetDir)\Resources" mkdir "$(TargetDir)Resources"</PreBuildEvent>

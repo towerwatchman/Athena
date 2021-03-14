@@ -28,5 +28,10 @@ namespace Connius.Settings
             get;
             set;
         }
+        public static string ImageMagickDirectory
+        {
+            get;
+            set;
+        }
     }
 }

@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WpfAnimatedGif;
 
 namespace Connius.Pages
 {
@@ -24,7 +25,7 @@ namespace Connius.Pages
     {
         private Program project = new Program();
         private Wrapper PythonWrapper = new Wrapper();
-
+        
         //public strings for keeping track of Images
         int errors = 0;
         int complete = 0;
@@ -41,19 +42,20 @@ namespace Connius.Pages
 
         private void PopulateWPF()
         {
-            //populate file format comboBox
-
             //populate format comboBox
-            cbFormat.Items.Add("8bit");
             cbFormat.Items.Add("32bit");
-            cbFormat.SelectedIndex = 1;
+            //cbFormat.Items.Add("8bit");            
+            cbFormat.SelectedIndex = 0;
 
             cbFileType.Items.Add("PNG");
-            cbFileType.Items.Add("JPG");
-            cbFileType.Items.Add("DDS:BC1");
-            cbFileType.Items.Add("DDS:BC3");
-            cbFileType.Items.Add("DDS:BC7");
+            //cbFileType.Items.Add("JPG");
+            //cbFileType.Items.Add("DDS:BC1");
+            //cbFileType.Items.Add("DDS:BC3");
+            //cbFileType.Items.Add("DDS:BC7");
             cbFileType.SelectedIndex = 0;
+
+            cbFactor.Items.Add("ESRGAN");
+            cbFactor.SelectedIndex = 0;
 
             //list all files in image folder folder        
             project.GetImageFiles(lv_FileList, Settings.Directory.ImageDirectory);
@@ -61,7 +63,7 @@ namespace Connius.Pages
             tb_Input_Directory.Text = Settings.Directory.ImageDirectory;
 
             //list all models in esrgan folder
-            project.GetModels(cb_Model, Settings.Directory.ModelDirectory);
+            project.GetModels(cb_Model, Settings.Directory.ModelDirectory);           
 
             //Population Labels
             lbGPU.Content = Settings.GPU.ActiveGPU;
@@ -79,6 +81,8 @@ namespace Connius.Pages
             lbPngquant.Content = Settings.ResourceChecker.IsPngQuantInstalled == true ? "Installed" : "Not Installed";
             lbWand.Foreground = Settings.ResourceChecker.IsWandInstalled == true ? Brushes.Green : Brushes.Red;
             lbWand.Content = Settings.ResourceChecker.IsWandInstalled == true ? "Installed" : "Not Installed";
+            lbImagick.Foreground = Settings.ResourceChecker.IsImagemagickInstalled == true ? Brushes.Green : Brushes.Red;
+            lbImagick.Content = Settings.ResourceChecker.IsImagemagickInstalled == true ? "Installed" : "Not Installed";
 
             //progress bar
             pbImages.Maximum = 1;
@@ -108,13 +112,13 @@ namespace Connius.Pages
             gridView.Columns.Add(formatColumn);
 
             GridViewColumn mipmapColumn = new GridViewColumn();
-            mipmapColumn.DisplayMemberBinding = new Binding("mipmap");
+            mipmapColumn.DisplayMemberBinding = new Binding("Mipmap");
             mipmapColumn.Header = "Mipmaps";
             mipmapColumn.Width = 60;
             gridView.Columns.Add(mipmapColumn);
 
             GridViewColumn aspectColumn = new GridViewColumn();
-            aspectColumn.DisplayMemberBinding = new Binding("aspect");
+            aspectColumn.DisplayMemberBinding = new Binding("Aspect");
             aspectColumn.Header = "Aspect";
             aspectColumn.Width = 60;
             gridView.Columns.Add(aspectColumn);
@@ -123,13 +127,7 @@ namespace Connius.Pages
             alphaColumn.DisplayMemberBinding = new Binding("Alpha");
             alphaColumn.Header = "Alpha";
             alphaColumn.Width = 60;
-            gridView.Columns.Add(alphaColumn);
-
-            GridViewColumn pathColumn = new GridViewColumn();
-            pathColumn.DisplayMemberBinding = new Binding("path");
-            pathColumn.Header = "Path";
-            pathColumn.Width = 60;
-            gridView.Columns.Add(pathColumn);
+            gridView.Columns.Add(alphaColumn);           
 
             lv_FileList.View = gridView;
 
@@ -167,7 +165,6 @@ namespace Connius.Pages
             //ImageDir = tb_Input_Directory.Text;
             //tb_Input_Directory.Text = Properties.Settings.Default.IMAGE_FOLDER;
         }
-
 
         private void BtnMipmaps_Click(object sender, RoutedEventArgs e)
         {
@@ -226,8 +223,53 @@ namespace Connius.Pages
 
         private void lv_FileList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            img_Picture.Source = new BitmapImage(new Uri(((Class.ImageClass)lv_FileList.SelectedItem).FileLocation));
+            img_Picture.Source = new BitmapImage(new Uri(((Class.ImageClass)lv_FileList.SelectedItem).Path));
             img_Picture.Stretch = Stretch.Uniform;
+        }
+
+        private void btnGeneratePreview_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var image = lv_FileList.SelectedItem;
+                string model = cb_Model.SelectedItem.ToString();
+                //ImageBehavior.SetAnimatedSource(img_Preview, new BitmapImage(new Uri("pack://application:,,,/Images/Loading.gif")));
+                //img_Preview.Source = new BitmapImage(new Uri("pack://application:,,,/Images/Loading.gif"));
+                img_Preview.Source = null;
+                if (image != null)
+                {
+                    Console.Out.WriteLine("Loading Preview");
+                    Task.Run(() =>
+                    {
+
+                        PythonWrapper.EsrganPreview(((Class.ImageClass)image).Path, Settings.Directory.OutputDirectory, model, Settings.GPU.IsCudaEnabled);
+                    }).ContinueWith(t => UpdateImagePreview(Settings.Directory.OutputDirectory + @"\preview.png"));
+                }
+                else if (image == null)
+                {
+                    Console.Out.WriteLine("No Image Selected");
+                }
+                else if (model == "None")
+                {
+                    Console.Out.WriteLine("No Model Selected");
+                }
+                
+            }
+            catch
+            {
+                MessageBox.Show("No Image Selected");
+            }
+
+        }
+
+        private void UpdateImagePreview(string image)
+        {
+
+            img_Preview.Dispatcher.BeginInvoke((Action)(() => img_Preview.Source =
+            new BitmapImage(new Uri(Settings.Directory.OutputDirectory + @"\preview.png"))
+            {
+                CacheOption = BitmapCacheOption.OnLoad
+            })) ;
         }
     }
 }

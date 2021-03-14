@@ -89,6 +89,18 @@ namespace Connius
             Settings.ResourceChecker.IsWandInstalled = Directory.Exists(Settings.Directory.PythonDirectory + @"\Lib\site-packages\wand") ? true : false;
             #endregion
 
+            #region CHECK IMAGEMAGICK
+
+            foreach (var directory in Directory.GetDirectories(@"C:\Program Files\"))
+            {
+                if (directory.Contains("ImageMagick"))
+                {
+                    Settings.Directory.ImageMagickDirectory = directory;
+                    Settings.ResourceChecker.IsImagemagickInstalled = true;
+                }
+            }
+            #endregion
+
             //Check for available Video Cards and enable either the NVIDIA or Intel
             if (Settings.GPU.ActiveGPU == "")
             {
@@ -101,6 +113,11 @@ namespace Connius
             {
                 foreach (ManagementObject obj in searcher.Get())
                 {
+                    System.Console.Out.WriteLine("-------------------------------------------");
+                    foreach (PropertyData propertyData in obj.Properties)
+                    {
+                        System.Console.Out.WriteLine(propertyData.Name + ": " + propertyData.Value);
+                    }
                     if (obj["Name"].ToString().Contains("NVIDIA"))
                     {
                         Settings.GPU.IsNVIDIAGPUAvailable = true;
@@ -151,7 +168,6 @@ namespace Connius
                 foreach (var file in files)
                 {
                     string f_name = file.Name;
-                    img = System.Drawing.Image.FromFile(file.FullName);
                     string ImageSize = "";
                     if (f_name.Contains("tex1"))//for Dolphin Textures
                     {
@@ -167,10 +183,13 @@ namespace Connius
 
                                 File.Move(file.FullName, folder + @"\Mipmap\" + f_name);
                             }
-
-                            ImageSize = img.Width + "x" + img.Height;
-                            listView.Dispatcher.BeginInvoke((Action)(() =>
-                                listView.Items.Add(new ImageClass { Name = f_name, ImgSize = ImageSize, Mipmap = "Yes", FileLocation = file.FullName })));
+                            else
+                            {
+                                img = System.Drawing.Image.FromFile(file.FullName);
+                                ImageSize = img.Width + "x" + img.Height;
+                                listView.Dispatcher.BeginInvoke((Action)(() =>
+                                    listView.Items.Add(new ImageClass { Name = f_name, ImgSize = ImageSize, Mipmap = "Yes", Path = file.FullName })));
+                            }
                         }
                         /*else if(temp[temp.Count() -1].Contains("6")) //Check for video frames from dolphin texture
                         {
@@ -181,9 +200,9 @@ namespace Connius
                         }*/
                         else
                         {
-
+                            img = System.Drawing.Image.FromFile(file.FullName);
                             ImageSize = img.Width + "x" + img.Height;
-                            listView.Dispatcher.BeginInvoke((Action)(() => listView.Items.Add(new ImageClass { Name = f_name, ImgSize = ImageSize, Mipmap = "No", FileLocation = file.FullName })));
+                            listView.Dispatcher.BeginInvoke((Action)(() => listView.Items.Add(new ImageClass { Name = f_name, ImgSize = ImageSize, Mipmap = "No", Path = file.FullName })));
                         }
                     }
                     else //for all other types add to the array of items
@@ -191,12 +210,12 @@ namespace Connius
                         /// *** Need to add check to image file type as listed in settings file.
                         /// *** Right now this will only work with *.png files.
                         /// *** REFACTOR 
-
+                        img = System.Drawing.Image.FromFile(file.FullName);
                         ImageSize = img.Width + "x" + img.Height;
                         if (ImageExtensions.Contains(Path.GetExtension(file.FullName).ToUpperInvariant()))
                         {
                             listView.Dispatcher.BeginInvoke((Action)(() =>
-                                listView.Items.Add(new ImageClass { Name = f_name, ImgSize = ImageSize, Mipmap = "No", FileLocation = file.FullName })));
+                                listView.Items.Add(new ImageClass { Name = f_name, ImgSize = ImageSize, Mipmap = "No", Path = file.FullName })));
                         }
                     }
                 }
@@ -214,6 +233,7 @@ namespace Connius
             //clear existing models
             comboBox.Dispatcher.BeginInvoke((Action)(() => comboBox.Items.Clear()));
 
+            comboBox.Dispatcher.BeginInvoke((Action)(() => comboBox.Items.Add("None")));
             try
             {
                 DirectoryInfo directoryInfo = new DirectoryInfo(folder);
@@ -223,7 +243,7 @@ namespace Connius
                 {
                     comboBox.Dispatcher.BeginInvoke((Action)(() => comboBox.Items.Add(file.Name)));
                 }
-                comboBox.Dispatcher.BeginInvoke((Action)(() => comboBox.SelectedIndex = 0));//show first item in list
+                comboBox.Dispatcher.BeginInvoke((Action)(() => comboBox.SelectedIndex = 1));//show first item in list
             }
             catch
             {

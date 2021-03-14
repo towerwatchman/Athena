@@ -18,8 +18,6 @@ namespace Connius
         private Wrapper PythonWrapper = new Wrapper();
         public MainWindow()
         {
-            LoadingScreen loadingScreen = new LoadingScreen();
-            loadingScreen.Show();
             InitializeComponent();
             uiMainFrame.Source = new Uri("../Pages/ImagePage.xaml", UriKind.RelativeOrAbsolute);
         }
@@ -64,5 +62,14 @@ namespace Connius
             System.Windows.Application.Current.Shutdown();
         }
 
+        private void btn_InstallImagick_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://imagemagick.org/script/download.php#windows");
+        }
+
+        private void btn_DownloadModels_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://upscale.wiki/wiki/Model_Database");
+        }
     }
 }

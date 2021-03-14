@@ -11,7 +11,6 @@ namespace Connius.Class
         public string Name { get; set; }
         public string ImgSize { get; set; }
         public string Mipmap { get; set; }
-
-        public string FileLocation { get; set; }
+        public string Path { get; set; }
     }
 }

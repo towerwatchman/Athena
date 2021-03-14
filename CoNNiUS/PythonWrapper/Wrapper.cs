@@ -6,13 +6,13 @@ namespace PythonWrapper
 {
     public class Wrapper
     {
+
+        private readonly string LocalDirectory = Directory.GetCurrentDirectory();
         public string PythonDir
         {
             get;
             set;
         }
-
-        private string LocalDirectory = Directory.GetCurrentDirectory();
 
         //Installer for missing Packages
         public void IsntallPackages()
@@ -51,6 +51,24 @@ namespace PythonWrapper
                 args = "--input " + src + @" --output " + dst + " --model " + LocalDirectory + @"\Resources\Models\" + model + " --cpu";
             }
 
+            return RunScriptHidden(cmd, args);
+
+        }
+
+        public string EsrganPreview(string src, string dst, string model, bool IsCudaEnabled)
+        {
+            string cmd = LocalDirectory + @"\Resources\Scripts\ESRGANpreview.py";
+            string args;
+            if (IsCudaEnabled == true)
+            {
+                args = "--input " + src + @" --output " + dst + " --model " + LocalDirectory + @"\Resources\Models\" + model;
+
+            }
+            else //Intel
+            {
+                args = "--input " + src + @" --output " + dst + " --model " + LocalDirectory + @"\Resources\Models\" + model + " --cpu";
+            }
+            
             return RunScriptHidden(cmd, args);
 
         }

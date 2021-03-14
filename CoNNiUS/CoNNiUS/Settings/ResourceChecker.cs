@@ -38,5 +38,10 @@ namespace Connius.Settings
             get;
             set;
         }
+        public static bool IsImagemagickInstalled
+        {
+            get;
+            set;
+        }
     }
 }

@@ -5,27 +5,30 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Connius"
         mc:Ignorable="d"
-        Title="CoNNiUS - Convolutional Neural Network Image UpScaler" Height="1080" Width="1920" Closing="Window_Closing" ResizeMode="NoResize" MinHeight="700" MinWidth="860" WindowStartupLocation="CenterScreen">
+        Title="CoNNiUS - Convolutional Neural Network Image UpScaler" Height="1015" Width="1820" Closing="Window_Closing" MinHeight="700" MinWidth="860" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
     <Grid>
-        <Menu HorizontalAlignment="Left" Height="18" VerticalAlignment="Top" Width="1274" Background="#FFCFCFD3" Foreground="Black">
+        <Menu Height="18" VerticalAlignment="Top" Background="#FFCFCFD3" Foreground="Black">
             <MenuItem Header="File">
                 <MenuItem Header="Exit" Click="MenuItem_Click"/>
             </MenuItem>
             <MenuItem Header="Edit">
-                <MenuItem Header="GPU" Margin="0,0,0,0" >
+                <MenuItem Header="GPU" Margin="0,0,0,0" IsEnabled="False">
                     <MenuItem x:Name="AMDMenu" Header="AMD" Click="AMDMenu_Click"/>
                     <MenuItem x:Name="NvidiaMenu" Header="NVIDIA" Click="NvidiaMenu_Click"/>
                     <MenuItem x:Name="IntelMenu" Header="Intel"/>
                 </MenuItem>
-                <MenuItem x:Name="btn_InstallPackages" Header="Install Missing Packages" Margin="0,0,0,0" Click="btn_InstallPackages_Click"/>
                 <MenuItem x:Name="btn_InstallPython" Header="Install Python 3.x.x" Margin="0,0,0,0"  Click="btn_InstallPython_Click"/>
+                <MenuItem x:Name="btn_InstallPackages" Header="Install Missing Python Packages" Margin="0,0,0,0" Click="btn_InstallPackages_Click"/>
                 <MenuItem x:Name="btn_InstallPytorch" Header="Install PyTorch" Margin="0,0,0,0"  Click="btn_InstallPytorch_Click"/>
+                <MenuItem x:Name="btn_InstallImagick" Header="Install ImageMagic" Margin="0,0,0,0" Click="btn_InstallImagick_Click"  />
+                <MenuItem x:Name="btn_InstallPngQuant" Header="Install Pngquant" Margin="0,0,0,0" />
+                <MenuItem x:Name="btn_DownloadModels" Header="Download ESRGAN Models" Margin="0,0,0,0" Click="btn_DownloadModels_Click" />
             </MenuItem>
             <MenuItem Header="Mode">
                 <MenuItem x:Name="miImages" Header="Images" HorizontalAlignment="Left"/>
-                <MenuItem x:Name="miVideos" Header="Video" HorizontalAlignment="Left"/>
+                <MenuItem x:Name="miVideos" Header="Video" HorizontalAlignment="Left" IsEnabled="False"/>
             </MenuItem>
         </Menu>
-        <Frame x:Name="uiMainFrame" HorizontalAlignment="Left" Height="673" Margin="0,18,0,0" VerticalAlignment="Top" Width="1274"/>
+        <Frame x:Name="uiMainFrame" Margin="0,18,0,0"/>
     </Grid>
 </Window>
